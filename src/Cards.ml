@@ -29,10 +29,11 @@ let rec reset n =
 
 let shuffle d = raise (Failure "Not Implemented")
 
-let peek d = 
-  match d with (dck,_) -> match dck with
-  | [] -> raise (Failure "deck is empty")
-  | h :: _ -> (h.name, h.value)
+let peek d =
+  match d with
+  | dck, _ -> (
+      match dck with
+      | [] -> raise (Failure "deck is empty")
+      | h :: _ -> (h.name, h.value))
 
-let pop d = function
-|
+let pop d = raise (Failure "pop")
