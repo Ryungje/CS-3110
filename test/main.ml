@@ -35,7 +35,7 @@ let peek_test
 
 (** [pop_test name d expected_output] constructs an OUnit test named
     [name] that asserts the quality of [expected_output] with [pop d]. *)
-let peek_test
+let pop_test
     (name : string)
     (d : Cards.deck)
     (expected_output : Cards.deck) : test =
@@ -45,7 +45,11 @@ let peek_test
   unit tests for modules below.
   ********************************************************************)
 
-let cards_tests = []
+let card_deck = reset 2
+
+let cards_tests =
+  [ peek_test "Testing peek" card_deck ("Ace of Clubs", 1) ]
+
 let dealer_tests = []
 let player_tests = []
 let command_tests = []

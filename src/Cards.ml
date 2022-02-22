@@ -41,5 +41,11 @@ let shuffle d =
   let snd (x, y) = y in
   snd
 
-let peek d = raise (Failure "Not Implemented")
-let pop d = raise (Failure "Not Implemented")
+let peek d =
+  match d with
+  | dck, _ -> (
+      match dck with
+      | [] -> raise (Failure "deck is empty")
+      | h :: _ -> (h.name, h.value))
+
+let pop d = raise (Failure "pop")
