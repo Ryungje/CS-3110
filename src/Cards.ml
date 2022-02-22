@@ -41,4 +41,4 @@ let pop d =
   | (dck : card list), (n : int) -> (
       match dck with
       | [] -> raise (Failure "deck is empty")
-      | h :: t -> (t, n))
+      | h :: t -> if t = [] then (reset n |> shuffle, n) else (t, n))
