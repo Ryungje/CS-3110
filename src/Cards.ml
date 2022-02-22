@@ -48,4 +48,9 @@ let peek d =
       | [] -> raise (Failure "deck is empty")
       | h :: _ -> (h.name, h.value))
 
-let pop d = raise (Failure "pop")
+let pop d =
+  match d with
+  | (dck : card list), (n : int) -> (
+      match dck with
+      | [] -> raise (Failure "deck is empty")
+      | h :: t -> (t, n))
