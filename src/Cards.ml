@@ -27,6 +27,19 @@ let rec reset n =
   in
   (make_deck n, n)
 
-let shuffle d = raise (Failure "Not Implemented")
+let cmp_tup (x, _) (y, _) = Int.compare x y
+let snd (_, y) = y
+
+let shuffle d =
+  let rec rng = function
+    | [] -> []
+    | h :: t -> Random.int 65536 :: rng t
+  in
+  List.combine (rng d) d
+  |> List.sort cmp_tup |> List.split
+  |>
+  let snd (x, y) = y in
+  snd
+
 let peek d = raise (Failure "Not Implemented")
 let pop d = raise (Failure "Not Implemented")
