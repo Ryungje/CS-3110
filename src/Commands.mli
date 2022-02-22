@@ -4,6 +4,7 @@
 type command =
   | Hit
   | Stand
+  | Play
   | Quit
 
 exception Empty
