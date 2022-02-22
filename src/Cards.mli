@@ -17,11 +17,11 @@ val shuffle : deck -> deck
     Requires: [deck] is a valid deck. *)
 
 val peek : deck -> string * int
-(** [peak d] is the name and value of the card at the top of the stack
+(** [peek d] is the name and value of the card at the top of the stack
     of cards [d]. Requires: [d] is valid deck. *)
 
 val pop : deck -> deck
-(** [peak d] is the stack of cards [d] with the top card removed. If
-    [peak d] is an empty stack after the top card is removed, then let
-    [peak d] be a new, complete, and shuffled stack of cards. Requires:
+(** [pop d] is the stack of cards [d] with the top card removed. If
+    [pop d] is an empty stack after the top card is removed, then let
+    [pop d] be a new, complete, and shuffled stack of cards. Requires:
     [d] is a valid deck. *)
