@@ -2,6 +2,8 @@ open Cards
 open Player
 open Dealer
 
+exception InvalidInput
+
 type s = {
   players : player list;
   dealer : player;

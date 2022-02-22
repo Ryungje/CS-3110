@@ -18,19 +18,19 @@ let cmp_lists lst1 lst2 =
 
 (** [shuffle_test name d expected_output] constructs an OUnit test
     named [name] that asserts the quality of [expected_output] with
-    [shuffle d]. *)*)
-let shuffle_test (name:string) (d:Cards.deck) (expected_output:deck) : test = 
+    [shuffle d]. *)
+let shuffle_test (name:string) (d: 'a list) (expected_output: 'a list) : test = 
   name >:: fun _ -> assert_equal true (cmp_lists d expected_output)
 
 (** [peek_test name d expected_output] constructs an OUnit test
     named [name] that asserts the quality of [expected_output] with
-    [peek d]. *)*)
+    [peek d]. *)
 let peek_test (name:string) (d:Cards.deck) (expected_output:string*int) : test = 
 name >:: fun _ -> assert_equal expected_output (peek d)
 
 (** [pop_test name d expected_output] constructs an OUnit test
     named [name] that asserts the quality of [expected_output] with
-    [pop d]. *)*)
+    [pop d]. *)
 let peek_test (name:string) (d:Cards.deck) (expected_output:Cards.deck) : test = 
 name >:: fun _ -> assert_equal expected_output (pop d)
 

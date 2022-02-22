@@ -22,7 +22,7 @@ val parse_name : string -> string list -> string list
   Raises: [Empty] if [i] is an empty string or contains only spaces. *)
 
 val parse_command : string -> command
-(** parse_command str] parses a player's input into a [command] as follows. [str] should only contain one word (i.e., consecutive sequence of non-sace caharacters) that is a verb that corresponds to a command.
+(** [parse_command str] parses a player's input into a [command] as follows. [str] should only contain one word (i.e., consecutive sequence of non-sace caharacters) that is a verb that corresponds to a command.
 
     - [parse_command "   hit  "] is [Hit]
     - [parse_command "stand"] is [Stand]
