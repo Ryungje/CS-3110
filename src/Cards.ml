@@ -2,7 +2,7 @@ open Yojson.Basic.Util
 
 type card = {
   name : string;
-  value : int
+  value : int;
 }
 
 type deck = card list
@@ -24,5 +24,9 @@ let rec reset = function
   | n -> standard_deck @ reset (n - 1)
 
 let shuffle d = raise (Failure "Not Implemented")
-let peek d = raise (Failure "Not Implemented")
+
+let peek d = function
+  | [] -> raise (Failure "deck is empty")
+  | h :: _ -> (h.name, h.value)
+
 let pop d = raise (Failure "Not Implemented")
