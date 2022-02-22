@@ -2,7 +2,7 @@ open Yojson.Basic.Util
 
 type card = {
   name : string;
-  value : int;
+  value : int
 }
 
 type deck = card list

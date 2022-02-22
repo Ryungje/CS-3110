@@ -6,7 +6,7 @@ type player = {
   value : int;
   bet : int;
   total : int;
-  hidden_ card: string;
+  hidden_card: string;
   hidden_value : int
 }
 

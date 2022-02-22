@@ -1,6 +1,10 @@
 (** Representation of dynamic state of the game BlackJack.
 
     This module represents the state of the BlackJack game, including the current deck of cards, the dealer, and each player. *)
+    
+open Cards
+open Player
+open Dealer
 
 exception InvalidInput
 (** Raised when inputs for game are not valid*)

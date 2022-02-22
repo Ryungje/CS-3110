@@ -5,10 +5,10 @@
 
 include Player
 
-val add_hidden : string * int -> player -> player
+val add_hidden : string * int -> Player.player -> player
 (** [add_hidden c p] is the dealer [p] who received a hidden card [c] to add to their hand. This hidden card should not be part of the shown hand or 
     shown value until it is revealed. Requires: [c] is a valid card and [p] is 
     a valid player. *)
 
-val reveal :  player -> player
+val reveal :  Player.player -> player
 (** [reveal p] is the dealer [p] who added their hidden card to their shown hand. Requires: [p] must be a valid player. *)
