@@ -6,8 +6,7 @@
 include Player
 
 val add_hidden : string * int -> player -> player
-(** [add_hidden c p] is the dealer [p] who received a hidden card [c] to
-    add to their hand. This hidden card should not be part of the shown hand or 
+(** [add_hidden c p] is the dealer [p] who received a hidden card [c] to add to their hand. This hidden card should not be part of the shown hand or 
     shown value until it is revealed. Requires: [c] is a valid card and [p] is 
     a valid player. *)
 
