@@ -27,7 +27,22 @@ let rec reset n =
   in
   (make_deck n, n)
 
-let shuffle d = raise (Failure "Not Implemented")
+let cmp_tup (x, _) (y, _) = Int.compare x y
+let snd (_, y) = y
+
+let shuffle d =
+  match d with
+  | dck, n ->
+      ( (let rec rng = function
+           | [] -> []
+           | h :: t -> Random.int 65536 :: rng t
+         in
+         List.combine (rng dck) dck
+         |> List.sort cmp_tup |> List.split
+         |>
+         let snd (x, y) = y in
+         snd),
+        n )
 
 let peek d =
   match d with
@@ -41,4 +56,4 @@ let pop d =
   | (dck : card list), (n : int) -> (
       match dck with
       | [] -> raise (Failure "deck is empty")
-      | h :: t -> if t = [] then (reset n |> shuffle, n) else (t, n))
+      | h :: t -> if t = [] then reset n |> shuffle else (t, n))
