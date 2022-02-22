@@ -45,14 +45,18 @@ let pop_test
   unit tests for modules below.
   ********************************************************************)
 
-let cards_tests = [ peek_test ]
+let card_deck = reset 2
+
+let cards_tests =
+  [ peek_test "Testing peek" card_deck ("Ace of Clubs", 1) ]
+
 let dealer_tests = []
 let player_tests = []
 let command_tests = []
 let state_tests = []
 
 let suite =
-  "test suite for A2"
+  "test suite for BlackJack"
   >::: List.flatten
          [
            cards_tests;

@@ -5,7 +5,7 @@ type card = {
   value : int;
 }
 
-type deck = card list
+type deck = card list * int
 
 let card_of_json j =
   {
@@ -19,9 +19,13 @@ let standard_deck =
   try deck_of_json (Yojson.Basic.from_file "data/standardDeck.json")
   with Type_error (s, _) -> failwith ("Parsing error: " ^ s)
 
-let rec reset = function
-  | 0 -> []
-  | n -> standard_deck @ reset (n - 1)
+let rec reset n =
+  let rec make_deck n =
+    match n with
+    | 0 -> []
+    | n -> standard_deck @ make_deck (n - 1)
+  in
+  (make_deck n, n)
 
 let shuffle d = raise (Failure "Not Implemented")
 
