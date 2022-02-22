@@ -6,8 +6,8 @@ type player = {
   value : int;
   bet : int;
   total : int;
-  hidden_card: string;
-  hidden_value : int
+  hidden_card : string;
+  hidden_value : int;
 }
 
 let init_stats str = raise (Failure "Not Implemented")
