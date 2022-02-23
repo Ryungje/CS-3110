@@ -18,9 +18,13 @@ val parse_number : string -> int
     value to be used in instantiating the number of standards decks or
     instantiating the number of partcipating players in the game.
 
+    Requires: [n] contains only alphanumeric (A-Z, a-z, 0-9) and space
+    characters (only ASCII character code 32; not tabs or newlines,
+    etc.).
+
     Raises: [Empty] if [i] is an empty string or contains only spaces.
 
-    Raises: [Malformed] if [i] is cannot be trimmed to a signle numeric
+    Raises: [Malformed] if [i] is cannot be trimmed to a single numeric
     (0-9) string without spaces or if [parse_number i] is <=0. *)
 
 val parse_name : string -> string list -> string list
@@ -31,7 +35,9 @@ val parse_name : string -> string list -> string list
     and space characters (only ASCII character code 32; not tabs or
     newlines, etc.).
 
-    Raises: [Empty] if [i] is an empty string or contains only spaces. *)
+    Raises: [Empty] if [i] is an empty string or contains only spaces.
+
+    Raises: [Malformed] if parsed [n] already exits in [n_list] *)
 
 val parse_command : string -> command
 (** [parse_command str] parses a player's input into a [command] as
