@@ -5,7 +5,10 @@ type card = {
   value : int;
 }
 
-type deck = card list * int
+type deck = {
+  cards : card list;
+  n : int;
+}
 
 let card_of_json j =
   {
@@ -19,41 +22,38 @@ let standard_deck =
   try deck_of_json (Yojson.Basic.from_file "data/standardDeck.json")
   with Type_error (s, _) -> failwith ("Parsing error: " ^ s)
 
-let rec reset n =
-  let rec make_deck n =
-    match n with
+let rec reset num =
+  let rec make_deck num =
+    match num with
     | 0 -> []
     | n -> standard_deck @ make_deck (n - 1)
   in
-  (make_deck n, n)
+  { cards = make_deck num; n = num }
 
 let cmp_tup (x, _) (y, _) = Int.compare x y
 let snd (_, y) = y
 
 let shuffle d =
-  match d with
-  | dck, n ->
-      ( (let rec rng = function
-           | [] -> []
-           | h :: t -> Random.int 65536 :: rng t
-         in
-         List.combine (rng dck) dck
-         |> List.sort cmp_tup |> List.split
-         |>
-         let snd (x, y) = y in
-         snd),
-        n )
+  let cs =
+    let rec rng = function
+      | [] -> []
+      | h :: t -> Random.int 65536 :: rng t
+    in
+    List.combine (rng d.cards) d.cards
+    |> List.sort cmp_tup |> List.split
+    |>
+    let snd (x, y) = y in
+    snd
+  in
+  { d with cards = cs }
 
 let peek d =
-  match d with
-  | dck, _ -> (
-      match dck with
-      | [] -> raise (Failure "deck is empty")
-      | h :: _ -> (h.name, h.value))
+  match d.cards with
+  | [] -> raise (Failure "deck is empty")
+  | h :: _ -> (h.name, h.value)
 
 let pop d =
-  match d with
-  | (dck : card list), (n : int) -> (
-      match dck with
-      | [] -> raise (Failure "deck is empty")
-      | h :: t -> if t = [] then reset n |> shuffle else (t, n))
+  match d.cards with
+  | [] -> raise (Failure "deck is empty")
+  | h :: t ->
+      if t = [] then reset d.n |> shuffle else { d with cards = t }

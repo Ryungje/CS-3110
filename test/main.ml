@@ -48,7 +48,10 @@ let pop_test
 let card_deck = reset 2
 
 let cards_tests =
-  [ peek_test "Testing peek" card_deck ("Ace of Clubs", 1) ]
+  [
+    peek_test "Testing peek" card_deck ("Ace of Clubs", 1)
+    (*pop_test "Testing pop" card_deck ();*);
+  ]
 
 let dealer_tests = []
 let player_tests = []
