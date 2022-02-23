@@ -1,4 +1,5 @@
-(** Representation of a dealer, a special type of player who cannot bet but can have a hidden card.
+(** Representation of a dealer, a special type of player who cannot bet
+    but can have a hidden card.
 
     This module represents the data stored within the dealer of the
     game. It handles alterations to the data and querying of the data. *)
@@ -7,11 +8,16 @@ exception Empty
 (** Raised when input is empty *)
 
 type player
-(** The abstract type of values repesenting a player participating in the game, such as name, current hand, value of current hand, current bet, and current total balance to be paid or collected. *)
+(** The abstract type of values repesenting a player participating in
+    the game, such as name, current hand, value of current hand, current
+    bet, and current total balance to be paid or collected. *)
 
 val init_stats : string -> player
-(** [init_stats str] is the initial stats of a player at the start of the game. The player should have name [str], no cards in hand, no bets, and no collected rewards. Note: a normal player cannot have a hidden card or value.
-    
+(** [init_stats str] is the initial stats of a player at the start of
+    the game. The player should have name [str], no cards in hand, no
+    bets, and no collected rewards. Note: a normal player cannot have a
+    hidden card or value.
+
     Requires: [str] contains only alphanumeric (A-Z, a-z, 0-9) and space
     characters (only ASCII character code 32; not tabs or newlines,
     etc.).
@@ -19,8 +25,8 @@ val init_stats : string -> player
     Raises: [Empty] if [str] is the empty string or contains only
     spaces. *)
 
-val add_card : string * int -> player -> player
-(** [add_card c p] is the player [p] who received another card [c] to
+val add_card : player -> string * int -> player
+(** [add_card p c] is the player [p] who received another card [c] to
     add to their hand. Requires: [c] must be a valid card from type deck
     and [p] must be a valid player *)
 
@@ -33,12 +39,15 @@ val hand_value : player -> int
     player [p]. Requires: [p] must be a valid player. *)
 
 val reset_hand : player -> player
-(** [reset_hand p] is the player with an empty hand. Requires: [p] must be a valid player. *)
+(** [reset_hand p] is the player with an empty hand. Requires: [p] must
+    be a valid player. *)
 
-val add_hidden : string * int -> player -> player
-(** [add_hidden c p] is the dealer [p] who received a hidden card [c] to add to their hand. This hidden card should not be part of the shown hand or 
-    shown value until it is revealed. Requires: [c] is a valid card and [p] is 
-    a valid player. *)
+val add_hidden : player -> string * int -> player
+(** [add_hidden p c] is the dealer [p] who received a hidden card [c] to
+    add to their hand. This hidden card should not be part of the shown
+    hand or shown value until it is revealed. Requires: [c] is a valid
+    card and [p] is a valid player. *)
 
-val reveal :  player -> player
-(** [reveal p] is the dealer [p] who added their hidden card to their shown hand. Requires: [p] must be a valid player. *)
+val reveal : player -> player
+(** [reveal p] is the dealer [p] who added their hidden card to their
+    shown hand. Requires: [p] must be a valid player. *)
