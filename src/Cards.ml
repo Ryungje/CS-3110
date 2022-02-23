@@ -30,9 +30,6 @@ let rec reset num =
   in
   { cards = make_deck num; n = num }
 
-let cmp_tup (x, _) (y, _) = Int.compare x y
-let snd (_, y) = y
-
 let shuffle d =
   let cs =
     let rec rng = function
@@ -40,11 +37,11 @@ let shuffle d =
       | h :: t -> Random.int 65536 :: rng t
     in
     List.combine (rng d.cards) d.cards
-    |> List.sort cmp_tup |> List.split
-    |>
-    let snd (x, y) = y in
-    snd
+    |> List.sort (fun (x, _) (y, _) -> Int.compare x y)
+    |> List.split
+    |> fun (x, y) -> y
   in
+
   { d with cards = cs }
 
 let peek d =
