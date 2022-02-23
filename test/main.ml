@@ -22,7 +22,7 @@ let cmp_lists lst1 lst2 =
 let shuffle_test (name : string) (d : deck) (expected_output : deck) :
     test =
   name >:: fun _ ->
-  assert_equal true (cmp_lists (cards d) (cards expected_output))
+  assert_equal true (cmp_lists (cards_of d) (cards_of expected_output))
 
 (** [peek_test name d expected_output] constructs an OUnit test named
     [name] that asserts the quality of [expected_output] with [peek d]. *)

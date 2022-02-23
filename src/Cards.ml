@@ -58,4 +58,4 @@ let pop d =
   | h :: t ->
       if t = [] then reset d.n |> shuffle else { d with cards = t }
 
-let cards d = d.cards
+let cards_of d = d.cards

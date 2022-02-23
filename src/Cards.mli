@@ -4,11 +4,13 @@
     each individual card. It handles alterations to the deck and
     querying of the data. *)
 
+type card
+(** The abstract type of values representing a card to be used in the
+    game. *)
+
 type deck
 (** The abstract type of values representing a stack of cards to be used
     in the game. Requires: [deck] can not be empty. *)
-
-type card
 
 val reset : int -> deck
 (** [reset n] is the new and complete stack of cards created from [n]
@@ -28,4 +30,6 @@ val pop : deck -> deck
     [pop d] be a new, complete, and shuffled stack of cards. Requires:
     [d] is a valid deck. *)
 
-val cards : deck -> card list
+val cards_of : deck -> card list
+(** [cards_of d] is the stack of cards in deck. Requires: [d] is a valid
+    deck. *)
