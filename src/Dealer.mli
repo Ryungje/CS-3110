@@ -25,6 +25,10 @@ val init_stats : string -> player
     Raises: [Empty] if [str] is the empty string or contains only
     spaces. *)
 
+val name_of : player -> string
+(** [name_of p] is the name of player [p]. Requires: [p] is a valid
+    player. *)
+
 val add_card : string * int -> player -> player
 (** [add_card c p] is the player [p] who received another card [c] to
     add to their hand. Requires: [c] must be a valid card from type deck

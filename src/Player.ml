@@ -11,6 +11,7 @@ type player = {
 }
 
 let init_stats str = raise (Failure "Not Implemented")
+let name_of p = raise (Failure "Not Impelmented")
 let add_card c p = raise (Failure "Not Implemented")
 let show_hand p = raise (Failure "Not Implemented")
 let hand_value p = raise (Failure "Not Implemented")
