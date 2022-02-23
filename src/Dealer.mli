@@ -25,8 +25,8 @@ val init_stats : string -> player
     Raises: [Empty] if [str] is the empty string or contains only
     spaces. *)
 
-val add_card : player -> string * int -> player
-(** [add_card p c] is the player [p] who received another card [c] to
+val add_card : string * int -> player -> player
+(** [add_card c p] is the player [p] who received another card [c] to
     add to their hand. Requires: [c] must be a valid card from type deck
     and [p] must be a valid player *)
 
@@ -42,8 +42,8 @@ val reset_hand : player -> player
 (** [reset_hand p] is the player with an empty hand. Requires: [p] must
     be a valid player. *)
 
-val add_hidden : player -> string * int -> player
-(** [add_hidden p c] is the dealer [p] who received a hidden card [c] to
+val add_hidden : string * int -> player -> player
+(** [add_hidden c p] is the dealer [p] who received a hidden card [c] to
     add to their hand. This hidden card should not be part of the shown
     hand or shown value until it is revealed. Requires: [c] is a valid
     card and [p] is a valid player. *)
