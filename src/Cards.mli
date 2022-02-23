@@ -8,6 +8,8 @@ type deck
 (** The abstract type of values representing a stack of cards to be used
     in the game. Requires: [deck] can not be empty. *)
 
+type card
+
 val reset : int -> deck
 (** [reset n] is the new and complete stack of cards created from [n]
     number of full standard decks of cards. Requires: [n] >= 1 *)
@@ -25,3 +27,5 @@ val pop : deck -> deck
     [pop d] is an empty stack after the top card is removed, then let
     [pop d] be a new, complete, and shuffled stack of cards. Requires:
     [d] is a valid deck. *)
+
+val cards : deck -> card list

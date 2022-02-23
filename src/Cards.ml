@@ -57,3 +57,5 @@ let pop d =
   | [] -> raise (Failure "deck is empty")
   | h :: t ->
       if t = [] then reset d.n |> shuffle else { d with cards = t }
+
+let cards d = d.cards

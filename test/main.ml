@@ -19,11 +19,10 @@ let cmp_lists lst1 lst2 =
 (** [shuffle_test name d expected_output] constructs an OUnit test named
     [name] that asserts the quality of [expected_output] with
     [shuffle d]. *)
-let shuffle_test
-    (name : string)
-    (d : 'a list)
-    (expected_output : 'a list) : test =
-  name >:: fun _ -> assert_equal true (cmp_lists d expected_output)
+let shuffle_test (name : string) (d : deck) (expected_output : deck) :
+    test =
+  name >:: fun _ ->
+  assert_equal true (cmp_lists (cards d) (cards expected_output))
 
 (** [peek_test name d expected_output] constructs an OUnit test named
     [name] that asserts the quality of [expected_output] with [peek d]. *)
@@ -38,8 +37,8 @@ let peek_test
 let pop_test
     (name : string)
     (d : Cards.deck)
-    (expected_output : Cards.deck) : test =
-  name >:: fun _ -> assert_equal expected_output (pop d)
+    (expected_output : string * int) : test =
+  name >:: fun _ -> assert_equal expected_output (pop d |> peek)
 
 (******************************************************************* Add
   unit tests for modules below.
@@ -49,8 +48,9 @@ let card_deck = reset 2
 
 let cards_tests =
   [
-    peek_test "Testing peek" card_deck ("Ace of Clubs", 1)
-    (*pop_test "Testing pop" card_deck ();*);
+    peek_test "Testing peek" card_deck ("Ace of Clubs", 1);
+    pop_test "Testing pop" card_deck ("Two of Clubs", 2);
+    shuffle_test "Testing shuffle" card_deck card_deck;
   ]
 
 let dealer_tests = []
