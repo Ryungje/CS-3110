@@ -19,10 +19,13 @@ let cmp_lists lst1 lst2 =
 (** [shuffle_test name d expected_output] constructs an OUnit test named
     [name] that asserts the quality of [expected_output] with
     [shuffle d]. *)
-let shuffle_test (name : string) (d : deck) (expected_output : deck) :
+
+let shuffle_test (name : string) (d : deck) (expected_output : int) :
     test =
   name >:: fun _ ->
-  assert_equal true (cmp_lists (cards_of d) (cards_of expected_output))
+  assert_equal expected_output
+    (d |> shuffle |> cards_of |> List.length)
+    ~printer:string_of_int
 
 (** [peek_test name d expected_output] constructs an OUnit test named
     [name] that asserts the quality of [expected_output] with [peek d]. *)
@@ -50,7 +53,8 @@ let cards_tests =
   [
     peek_test "Testing peek" card_deck ("Ace of Clubs", 1);
     pop_test "Testing pop" card_deck ("Two of Clubs", 2);
-    shuffle_test "Testing shuffle" card_deck card_deck;
+    shuffle_test "Testing shuffle" card_deck
+      (card_deck |> cards_of |> List.length);
   ]
 
 let dealer_tests = []
