@@ -6,13 +6,29 @@ type player = {
   value : int;
   bet : int;
   total : int;
-  hidden_card : string;
-  hidden_value : int;
+  hidden_card : string * int;
 }
 
-let init_stats str = raise (Failure "Not Implemented")
-let name_of p = raise (Failure "Not Impelmented")
-let add_card c p = raise (Failure "Not Implemented")
-let show_hand p = raise (Failure "Not Implemented")
-let hand_value p = raise (Failure "Not Implemented")
-let reset_hand p = raise (Failure "Not Implemented")
+let init_stats str =
+  if str = "" then raise Empty
+  else
+    {
+      name = str;
+      hand = [];
+      value = 0;
+      bet = 0;
+      total = 0;
+      hidden_card = ("", 0);
+    }
+
+let name_of p = p.name
+
+let add_card c p =
+  match c with
+  | n, v -> { p with hand = p.hand @ [ n ]; value = p.value + v }
+
+let show_hand p = p.hand
+let hand_value p = p.value
+let reset_hand p = { p with hand = []; value = 0 }
+let add_hidden c p = raise (Failure "Not Implemented")
+let reveal p = raise (Failure "Not Implemented")
