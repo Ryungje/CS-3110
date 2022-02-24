@@ -119,8 +119,11 @@ let player_tests = []
 
 let command_tests =
   [
-    parse_number_test "Parse valid integer" "8" 8;
+    parse_number_test "Parse valid integer" "1" 1;
     parse_number_test "Parse valid integer with spaces" "   9   " 9;
+    parse_number_exception_test "Parse invalid input 0" "0" Malformed;
+    parse_number_exception_test "Parse invalid input of negative number"
+      "-2" Malformed;
     parse_number_exception_test
       "Parse invalid input with too many values" "  10 11" Malformed;
     parse_number_exception_test "Parse invalid input with words"
