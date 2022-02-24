@@ -30,5 +30,8 @@ let add_card c p =
 let show_hand p = p.hand
 let hand_value p = p.value
 let reset_hand p = { p with hand = []; value = 0 }
-let add_hidden c p = raise (Failure "Not Implemented")
-let reveal p = raise (Failure "Not Implemented")
+let add_hidden c p = { p with hidden_card = c }
+
+let reveal p =
+  let new_p = add_card p.hidden_card p in
+  { new_p with hidden_card = ("", 0) }
