@@ -6,6 +6,10 @@ open Commands
   Add definitions and helper functions for test cases below.
   ********************************************************************)
 
+(** [repeat f n x] is the output when function [f] is applied on input
+    [x] for a total of [n] times. *)
+let rec repeat f n x = if n <= 0 then x else x |> f |> repeat f (n - 1)
+
 (** [cmp_lists lst1 lst2] compares two lists to see whether they are
     equivalent, meaning they must contain the same elements, though not
     necessarily in the same order. *)
@@ -20,12 +24,19 @@ let cmp_lists lst1 lst2 =
     [name] that asserts the quality of [expected_output] with
     [shuffle d]. *)
 
-let shuffle_test (name : string) (d : deck) (expected_output : int) :
+let shuffle_test (name : string) (d : deck) (expected_output : deck) :
     test =
   name >:: fun _ ->
-  assert_equal expected_output
-    (d |> shuffle |> cards_of |> List.length)
-    ~printer:string_of_int
+  assert_equal true
+    (cmp_lists (cards_of (shuffle d)) (cards_of expected_output))
+
+let rec print_cards d num =
+  if num = 0 then print_endline "end of deck"
+  else
+    match peek d with
+    | n, _ ->
+        let _ = print_endline n in
+        print_cards (pop d) (num - 1)
 
 (** [peek_test name d expected_output] constructs an OUnit test named
     [name] that asserts the quality of [expected_output] with [peek d]. *)
@@ -36,12 +47,24 @@ let peek_test
   name >:: fun _ -> assert_equal expected_output (peek d)
 
 (** [pop_test name d expected_output] constructs an OUnit test named
-    [name] that asserts the quality of [expected_output] with [pop d]. *)
+    [name] that asserts the quality of [expected_output] with
+    [peak (pop d)]. *)
 let pop_test
     (name : string)
     (d : Cards.deck)
     (expected_output : string * int) : test =
   name >:: fun _ -> assert_equal expected_output (pop d |> peek)
+
+(** [pop_newdeck_test name d expected_output] constructs an OUnit test
+    named [name] that asserts the quality of [expected_output] with
+    [pop d]. *)
+let pop_newdeck_test
+    (name : string)
+    (d : Cards.deck)
+    (expected_output : Cards.deck) : test =
+  name >:: fun _ ->
+  assert_equal true
+    (cmp_lists (cards_of expected_output) (cards_of (pop d)))
 
 (** [parse_number_test name i expected_output] constructs an OUnit test
     named [name] that asserts the quality of [expected_output] with
@@ -104,14 +127,19 @@ let parse_command_exception_test (name : string) (str : string) e : test
   Add unit tests for modules below.
   ********************************************************************)
 
-let card_deck = reset 2
+let card_deck = reset 1
+let one_card_deck = repeat pop 51 (reset 1)
+
+let _ =
+  print_cards (shuffle card_deck) (List.length (cards_of card_deck))
 
 let cards_tests =
   [
     peek_test "Testing peek" card_deck ("Ace of Clubs", 1);
     pop_test "Testing pop" card_deck ("Two of Clubs", 2);
-    shuffle_test "Testing shuffle" card_deck
-      (card_deck |> cards_of |> List.length);
+    pop_newdeck_test "Testing pop on deck with one card" one_card_deck
+      card_deck;
+    shuffle_test "Testing shuffle" card_deck card_deck;
   ]
 
 let dealer_tests = []
