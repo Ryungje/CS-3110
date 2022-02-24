@@ -7,6 +7,13 @@ type command =
 exception Empty
 exception Malformed
 
+let is_quit str =
+  let word_list =
+    List.filter (fun x -> x <> "") (String.split_on_char ' ' str)
+  in
+  if word_list = [] then raise Empty
+  else List.length word_list = 1 && List.hd word_list = "quit"
+
 let parse_number i =
   let word_list =
     List.filter (fun x -> x <> "") (String.split_on_char ' ' i)

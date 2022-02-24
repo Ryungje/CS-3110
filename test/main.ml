@@ -81,6 +81,13 @@ let player_test
   name >:: fun _ ->
   assert_equal expected_output (name_of p, show_hand p, hand_value p)
 
+(** [is_quit name str expected_output] constructs an OUnit test named
+    [name] that asserts the quality of [expected_output] with
+    [is_quit str]. *)
+let is_quit_test (name : string) (str : string) (expected_output : bool)
+    : test =
+  name >:: fun _ -> assert_equal expected_output (is_quit str)
+
 (** [parse_number_test name i expected_output] constructs an OUnit test
     named [name] that asserts the quality of [expected_output] with
     [parse_number i]*)
@@ -294,6 +301,9 @@ let player_tests =
 
 let command_tests =
   [
+    is_quit_test "Valid quit command" "    quit " true;
+    is_quit_test "Invalid quit command" "quit game" false;
+    is_quit_test "Not quit" "stop" false;
     parse_number_test "Parse valid integer" "1" 1;
     parse_number_test "Parse valid integer with spaces" "   9   " 9;
     parse_number_exception_test "Parse invalid input 0" "0" Malformed;

@@ -13,6 +13,9 @@ exception Empty
 exception Malformed
 (** Raised when a malformed command is encountered. *)
 
+val is_quit : string -> bool
+(** [is_quit str] checks if the player input the quit command.*)
+
 val parse_number : string -> int
 (** [parse_number i] parses a player's input number [i] into an int
     value to be used in instantiating the number of standards decks or
