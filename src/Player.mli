@@ -1,4 +1,4 @@
-(** Representation of a player.
+(** Representation of a player (dealer included).
 
     Note: A normal player can have a name, hold a hand of cards, bet,
     and collect rewards. A dealer is a special type of player that
