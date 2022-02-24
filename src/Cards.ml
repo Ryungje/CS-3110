@@ -30,19 +30,21 @@ let rec reset num =
   in
   { cards = make_deck num; n = num }
 
-let shuffle d =
-  let cs =
-    let rec rng = function
-      | [] -> []
-      | h :: t -> Random.int 65536 :: rng t
-    in
-    List.combine (rng d.cards) d.cards
-    |> List.sort (fun (x, _) (y, _) -> Int.compare x y)
-    |> List.split
-    |> fun (x, y) -> y
-  in
+let _ = Random.init (int_of_float (Unix.gettimeofday ()))
 
-  { d with cards = cs }
+let shuffle d =
+  let paired_list =
+    List.map (fun x -> (Random.float 2. ** 30., x)) d.cards
+  in
+  let shuffled_paired_list = List.sort compare paired_list in
+  let shuffled_list =
+    List.map
+      (fun x ->
+        match x with
+        | _, c -> c)
+      shuffled_paired_list
+  in
+  { d with cards = shuffled_list }
 
 let peek d =
   match d.cards with
