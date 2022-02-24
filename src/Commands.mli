@@ -7,14 +7,14 @@ type command =
   | Play
   | Quit
 
+exception Escape
+(** Raised when user inputs command for quitting the game. *)
+
 exception Empty
 (** Raised when an empty command is parsed. *)
 
 exception Malformed
 (** Raised when a malformed command is encountered. *)
-
-val is_quit : string -> bool
-(** [is_quit str] checks if the player input the quit command.*)
 
 val parse_number : string -> int
 (** [parse_number i] parses a player's input number [i] into an int

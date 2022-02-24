@@ -6,13 +6,7 @@ type command =
 
 exception Empty
 exception Malformed
-
-let is_quit str =
-  let word_list =
-    List.filter (fun x -> x <> "") (String.split_on_char ' ' str)
-  in
-  if word_list = [] then raise Empty
-  else List.length word_list = 1 && List.hd word_list = "quit"
+exception Escape
 
 let parse_number i =
   let word_list =
@@ -20,6 +14,7 @@ let parse_number i =
   in
   if word_list = [] then raise Empty
   else if List.length word_list > 1 then raise Malformed
+  else if List.hd word_list = "quit" then raise Escape
   else
     match int_of_string (List.hd word_list) with
     | (n : int) when n >= 1 -> n
@@ -31,6 +26,8 @@ let parse_name n n_list =
     List.filter (fun x -> x <> "") (String.split_on_char ' ' n)
   in
   if word_list = [] then raise Empty
+  else if List.length word_list = 1 && List.hd word_list = "quit" then
+    raise Escape
   else
     let name = String.concat " " word_list in
     if List.exists (fun x -> x = name) n_list then raise Malformed
