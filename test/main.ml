@@ -256,8 +256,27 @@ let print_dealer d_hand =
   Add unit tests for modules below.
   ********************************************************************)
 
+(* Sample card deck *)
 let card_deck = reset 1
 let one_card_deck = repeat pop 51 (reset 1)
+
+(* Sample players *)
+let p0 = init_stats "Bob Carlos"
+
+let p1 =
+  p0
+  |> add_card ("Five of Hearts", 5)
+  |> add_card ("Queen of Spades", 10)
+
+let p_none = reset_hand p1
+
+(* Sample dealer *)
+let d_with_hidden =
+  init_stats "Dealer"
+  |> add_card ("Two of Clubs", 2)
+  |> add_hidden ("Nine of Diamonds", 9)
+
+let d_revealed = reveal d_with_hidden
 
 let _ =
   print_cards (shuffle card_deck) (List.length (cards_of card_deck))
@@ -270,22 +289,6 @@ let cards_tests =
       card_deck;
     shuffle_test "Testing shuffle" card_deck card_deck;
   ]
-
-let p0 = init_stats "Bob Carlos"
-
-let p1 =
-  p0
-  |> add_card ("Five of Hearts", 5)
-  |> add_card ("Queen of Spades", 10)
-
-let p_none = reset_hand p1
-
-let d_with_hidden =
-  init_stats "Dealer"
-  |> add_card ("Two of Clubs", 2)
-  |> add_hidden ("Nine of Diamonds", 9)
-
-let d_revealed = reveal d_with_hidden
 
 let player_tests =
   [
