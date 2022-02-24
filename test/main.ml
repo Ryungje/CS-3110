@@ -308,8 +308,11 @@ let command_tests =
       " 13 hell" Malformed;
     parse_number_exception_test "Parse invalid float number" "19.2"
       Malformed;
+    parse_number_exception_test "Parse quit input in sentence"
+      "quit please" Malformed;
     parse_number_exception_test "Parse empty input" "" Empty;
     parse_number_exception_test "Parse space only input" "    " Empty;
+    parse_number_exception_test "Parse quit input" "quit" Escape;
     parse_name_test "Parse valid name: Bob" "  Bob  " [] [ "Bob" ];
     parse_name_test "Parse valid name : Henry Conlon" "Henry   Conlon"
       [ "Bob" ]
@@ -319,10 +322,10 @@ let command_tests =
       Empty;
     parse_name_exception_test "Parse name already in list" "Bob"
       [ "Henry"; "Bob" ] Malformed;
+    parse_name_exception_test "Parse quit" "quit" [] Escape;
     parse_command_test "Parse hit command" "  hit " Hit;
     parse_command_test "Parse stand command" "stand " Stand;
     parse_command_test "Parse play command" "  play" Play;
-    parse_command_test "Parse quit command" "quit" Quit;
     parse_command_exception_test "Parse empty command" "" Empty;
     parse_command_exception_test "Parse space only command" "    " Empty;
     parse_command_exception_test "Parse invalid command for hit"
@@ -335,6 +338,9 @@ let command_tests =
       "quit game now" Malformed;
     parse_command_exception_test
       "Parse invalid and unrecognized command" "open seasame" Malformed;
+    parse_command_exception_test "Parse quit input in sentence"
+      "quit please" Malformed;
+    parse_command_exception_test "Parse quit" "quit" Escape;
   ]
 
 let st0 = init_state 2 3 [ "Bob"; "Alice"; "Henry" ]

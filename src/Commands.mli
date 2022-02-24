@@ -5,7 +5,6 @@ type command =
   | Hit
   | Stand
   | Play
-  | Quit
 
 exception Escape
 (** Raised when user inputs command for quitting the game. *)
@@ -27,8 +26,10 @@ val parse_number : string -> int
 
     Raises: [Empty] if [i] is an empty string or contains only spaces.
 
-    Raises: [Malformed] if [i] is cannot be trimmed to a single numeric
-    (0-9) string without spaces or if [parse_number i] is <=0. *)
+    Raises: [Malformed] if [i] cannot be trimmed to a single numeric
+    (0-9) string without spaces or if [parse_number i] is <=0.
+
+    Raises: [Escape] if [i] is "quit". *)
 
 val parse_name : string -> string list -> string list
 (** [parse_name n n_list] is the list containing all existing player
@@ -40,7 +41,9 @@ val parse_name : string -> string list -> string list
 
     Raises: [Empty] if [i] is an empty string or contains only spaces.
 
-    Raises: [Malformed] if parsed [n] already exits in [n_list] *)
+    Raises: [Malformed] if parsed [n] already exits in [n_list]
+
+    Raises: [Escape] if [i] is "quit". *)
 
 val parse_command : string -> command
 (** [parse_command str] parses a player's input into a [command] as
@@ -51,7 +54,6 @@ val parse_command : string -> command
     - [parse_command "   hit  "] is [Hit]
     - [parse_command "stand"] is [Stand]
     - [parse_command "play"] is [Play]
-    - [parse_command "quit"] is [Quit]
 
     Requires: [str] contains only alphanumeric (A-Z, a-z, 0-9) and space
     characters (only ASCII character code 32; not tabs or newlines,
