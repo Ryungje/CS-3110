@@ -1,7 +1,10 @@
 open OUnit2
 open Game
 open Cards
+open Player
 open Commands
+open State
+
 (**********************************************************************
   Add definitions and helper functions for test cases below.
   ********************************************************************)
@@ -30,6 +33,8 @@ let shuffle_test (name : string) (d : deck) (expected_output : deck) :
   assert_equal true
     (cmp_lists (cards_of (shuffle d)) (cards_of expected_output))
 
+(** [print_cards d num] prints out the name of the first [num]th cards
+    in a deck to check if the order of the cards is correct. *)
 let rec print_cards d num =
   if num = 0 then print_endline "end of deck"
   else
@@ -65,6 +70,16 @@ let pop_newdeck_test
   name >:: fun _ ->
   assert_equal true
     (cmp_lists (cards_of expected_output) (cards_of (pop d)))
+
+(** [player_test name p expected_output] constructs an OUnit test named
+    [name] that asserts the quality [expected_output] with ([name_of p],
+    [show_hand p], [hand_value p])*)
+let player_test
+    (name : string)
+    (p : Player.player)
+    (expected_output : string * string list * int) : test =
+  name >:: fun _ ->
+  assert_equal expected_output (name_of p, show_hand p, hand_value p)
 
 (** [parse_number_test name i expected_output] constructs an OUnit test
     named [name] that asserts the quality of [expected_output] with
@@ -123,11 +138,118 @@ let parse_command_exception_test (name : string) (str : string) e : test
   let f () = parse_command str in
   assert_raises e f
 
+(** [init_state_test name num_deck num_player player_names] constructs
+    an OUnit test named [name] that tests
+    [init_state num_deck num_player player_names]. It checks if the
+    total number of cards in player and dealer hands is equal to
+    2*(#ofplayer)+1 and checks if number of cards remaining in the deck
+    is (num_deck*52)-2*(#ofplayer)-1. *)
+let rec count p_list acc =
+  match p_list with
+  | [] -> acc
+  | h :: t -> (
+      match h with
+      | n, cards -> count t (acc + List.length cards))
+
+let init_state_test
+    (name : string)
+    (num_deck : int)
+    (num_player : int)
+    (player_names : string list) : test =
+  name >:: fun _ ->
+  assert_equal true
+    (let st = init_state num_deck num_player player_names in
+     let plist = list_of_players st in
+     let num_cards =
+       count plist 0 + List.length (st |> dealer_of |> show_hand)
+     in
+     let num_in_deck =
+       st |> remaining_deck |> cards_of |> List.length
+     in
+     num_cards + num_in_deck = (num_deck * 52) - 1)
+
+(** [init_state_exception_test name num_deck num_player player_names e]
+    constructs an OUnit test named [name] that asserts an exception [e]
+    is raised with [init_state num_deck num_player player_names]. *)
+let init_state_exception_test
+    (name : string)
+    (num_deck : int)
+    (num_player : int)
+    (player_names : string list)
+    e : test =
+  name >:: fun _ ->
+  let f () = init_state num_deck num_player player_names in
+  assert_raises e f
+
+(** [state_hiddencard_test name num_deck st] constructs an OUnit test
+    named [name] that tests if the total number of cards in player and
+    dealers hands of [st] is equal to the number of cards taken from the
+    deck (num_deck*52 - length_of_deck). Requires: [st] is a valid game
+    state and the dealer currently had a hidden card. *)
+
+let state_hiddencard_test
+    (name : string)
+    (num_deck : int)
+    (st0 : State.s) : test =
+  name >:: fun _ ->
+  assert_equal true
+    (let st = st0 in
+     let plist = list_of_players st in
+     let num_cards =
+       count plist 0 + List.length (st |> dealer_of |> show_hand)
+     in
+     let num_in_deck =
+       st |> remaining_deck |> cards_of |> List.length
+     in
+     num_cards + num_in_deck = (num_deck * 52) - 1)
+
+(** [state_completedealer_test name num_deck st] constructs an OUnit
+    test named [name] that tests if the total number of cards in player
+    and dealers hands of [st] is equal to the number of cards taken from
+    the deck (num_deck*52 - length_of_deck). Requires: [st] is a valid
+    game state and the dealer has no hidden cards and completed his hand
+    to be greater than 17. *)
+
+let state_completedealer_test
+    (name : string)
+    (num_deck : int)
+    (st0 : State.s) : test =
+  name >:: fun _ ->
+  assert_equal true
+    (let st = st0 in
+     let plist = list_of_players st in
+     let num_cards =
+       count plist 0 + List.length (st |> dealer_of |> show_hand)
+     in
+     let num_in_deck =
+       st |> remaining_deck |> cards_of |> List.length
+     in
+     num_cards + num_in_deck = num_deck * 52
+     && st |> dealer_of |> hand_value > 17)
+
+(** [print_players p_list] prints the name and hand of each player in
+    [p_list] to check if state functions are working. *)
+let rec print_players p_list =
+  match p_list with
+  | [] -> print_string ""
+  | h :: t -> (
+      match h with
+      | name, cards ->
+          let _ =
+            print_endline (name ^ "'s hand: " ^ String.concat ", " cards)
+          in
+          print_players t)
+
+(** [print_dealer d_hand] prints the hand of the dealer to check if
+    state functions are working. *)
+let print_dealer d_hand =
+  print_endline ("Dealer's hand: " ^ String.concat ", " d_hand)
+
 (**********************************************************************
   Add unit tests for modules below.
   ********************************************************************)
 
-let card_deck = reset 2
+let card_deck = reset 1
 let one_card_deck = repeat pop 51 (reset 1)
 
 let _ =
@@ -142,8 +264,33 @@ let cards_tests =
     shuffle_test "Testing shuffle" card_deck card_deck;
   ]
 
-let dealer_tests = []
-let player_tests = []
+let p0 = init_stats "Bob Carlos"
+
+let p1 =
+  p0
+  |> add_card ("Five of Hearts", 5)
+  |> add_card ("Queen of Spades", 10)
+
+let p_none = reset_hand p1
+
+let d_with_hidden =
+  init_stats "Dealer"
+  |> add_card ("Two of Clubs", 2)
+  |> add_hidden ("Nine of Diamonds", 9)
+
+let d_revealed = reveal d_with_hidden
+
+let player_tests =
+  [
+    player_test "Player with no hand" p0 ("Bob Carlos", [], 0);
+    player_test "Player with a hand" p1
+      ("Bob Carlos", [ "Five of Hearts"; "Queen of Spades" ], 15);
+    player_test "Reset player's hand" p_none ("Bob Carlos", [], 0);
+    player_test "Dealer with hidden card" d_with_hidden
+      ("Dealer", [ "Two of Clubs" ], 2);
+    player_test "Dealer revealed hidden card" d_revealed
+      ("Dealer", [ "Two of Clubs"; "Nine of Diamonds" ], 11);
+  ]
 
 let command_tests =
   [
@@ -187,17 +334,33 @@ let command_tests =
       "Parse invalid and unrecognized command" "open seasame" Malformed;
   ]
 
-let state_tests = []
+let st0 = init_state 2 3 [ "Bob"; "Alice"; "Henry" ]
+let _ = print_endline "Initial state"
+let _ = print_players (list_of_players st0)
+let _ = print_dealer (st0 |> dealer_of |> show_hand)
+let st1 = deal "Alice" st0
+let _ = print_endline "Alice gets another card"
+let _ = print_players (list_of_players st1)
+let _ = print_dealer (st1 |> dealer_of |> show_hand)
+let st2 = complete_hand st1
+let _ = print_endline "Dealer completes his hand"
+let _ = print_players (list_of_players st2)
+let _ = print_dealer (st2 |> dealer_of |> show_hand)
+
+let state_tests =
+  [
+    init_state_test "test initial state" 2 3 [ "Bob"; "Alice"; "Henry" ];
+    init_state_exception_test
+      "test that init_state raises InvalidInput exception" 2 4
+      [ "Bob"; "Alice"; "Henry" ]
+      InvalidInput;
+    state_hiddencard_test "test dealing a card to a player" 2 st1;
+    state_completedealer_test "test dealer completes hand" 2 st2;
+  ]
 
 let suite =
   "test suite for BlackJack"
   >::: List.flatten
-         [
-           cards_tests;
-           dealer_tests;
-           player_tests;
-           command_tests;
-           state_tests;
-         ]
+         [ cards_tests; player_tests; command_tests; state_tests ]
 
 let _ = run_test_tt_main suite
