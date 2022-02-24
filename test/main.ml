@@ -274,6 +274,7 @@ let d_revealed = reveal d_with_hidden
 let _ =
   print_cards (shuffle card_deck) (List.length (cards_of card_deck))
 
+(* Test Cases *)
 let cards_tests =
   [
     peek_test "Testing peek" card_deck ("Ace of Clubs", 1);
