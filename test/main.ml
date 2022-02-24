@@ -326,7 +326,6 @@ let command_tests =
     parse_command_test "Parse hit command" "  hit " Hit;
     parse_command_test "Parse stand command" "stand " Stand;
     parse_command_test "Parse play command" "  play" Play;
-    parse_command_test "Parse quit command" "quit" Quit;
     parse_command_exception_test "Parse empty command" "" Empty;
     parse_command_exception_test "Parse space only command" "    " Empty;
     parse_command_exception_test "Parse invalid command for hit"

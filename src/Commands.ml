@@ -2,7 +2,6 @@ type command =
   | Hit
   | Stand
   | Play
-  | Quit
 
 exception Empty
 exception Malformed
@@ -44,5 +43,5 @@ let parse_command str =
     | "hit" -> Hit
     | "stand" -> Stand
     | "play" -> Play
-    | "quit" -> Quit
+    | "quit" -> raise Escape
     | _ -> raise Malformed
