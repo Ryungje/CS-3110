@@ -127,7 +127,7 @@ let parse_command_exception_test (name : string) (str : string) e : test
   Add unit tests for modules below.
   ********************************************************************)
 
-let card_deck = reset 1
+let card_deck = reset 2
 let one_card_deck = repeat pop 51 (reset 1)
 
 let _ =
