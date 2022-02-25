@@ -73,13 +73,14 @@ let pop_newdeck_test
 
 (** [player_test name p expected_output] constructs an OUnit test named
     [name] that asserts the quality [expected_output] with ([name_of p],
-    [show_hand p], [hand_value p])*)
+    [show_hand p], [hand_value p], [is_bust p])*)
 let player_test
     (name : string)
     (p : Player.player)
-    (expected_output : string * string list * int) : test =
+    (expected_output : string * string list * int * bool) : test =
   name >:: fun _ ->
-  assert_equal expected_output (name_of p, show_hand p, hand_value p)
+  assert_equal expected_output
+    (name_of p, show_hand p, hand_value p, is_bust p)
 
 (** [parse_number_test name i expected_output] constructs an OUnit test
     named [name] that asserts the quality of [expected_output] with
@@ -225,7 +226,18 @@ let state_completedealer_test
        st |> remaining_deck |> cards_of |> List.length
      in
      num_cards + num_in_deck = num_deck * 52
-     && st |> dealer_of |> hand_value > 17)
+     && st |> dealer_of |> hand_value >= 17)
+
+(** [state_resetall_test name st] constructs an OUnit test named [name]
+    that asserts that there are no cards in all player's and the
+    dealer's hands. *)
+
+let state_resetall_test (name : string) (st0 : State.s) : test =
+  name >:: fun _ ->
+  assert_equal 0
+    (let st = st0 in
+     let plist = list_of_players st in
+     count plist 0 + List.length (st |> dealer_of |> show_hand))
 
 (** [print_players p_list] prints the name and hand of each player in
     [p_list] to check if state functions are working. *)
@@ -266,10 +278,11 @@ let p_none = reset_hand p1
 (* Sample dealer *)
 let d_with_hidden =
   init_stats "Dealer"
-  |> add_card ("Two of Clubs", 2)
+  |> add_card ("Three of Clubs", 3)
   |> add_hidden ("Nine of Diamonds", 9)
 
 let d_revealed = reveal d_with_hidden
+let d_busted = d_revealed |> add_card ("Queen of Hearts", 10)
 
 let _ =
   print_cards (shuffle card_deck) (List.length (cards_of card_deck))
@@ -286,14 +299,19 @@ let cards_tests =
 
 let player_tests =
   [
-    player_test "Player with no hand" p0 ("Bob Carlos", [], 0);
+    player_test "Player with no hand" p0 ("Bob Carlos", [], 0, false);
     player_test "Player with a hand" p1
-      ("Bob Carlos", [ "Five of Hearts"; "Queen of Spades" ], 15);
-    player_test "Reset player's hand" p_none ("Bob Carlos", [], 0);
+      ("Bob Carlos", [ "Five of Hearts"; "Queen of Spades" ], 15, false);
+    player_test "Reset player's hand" p_none ("Bob Carlos", [], 0, false);
     player_test "Dealer with hidden card" d_with_hidden
-      ("Dealer", [ "Two of Clubs" ], 2);
+      ("Dealer", [ "Three of Clubs" ], 3, false);
     player_test "Dealer revealed hidden card" d_revealed
-      ("Dealer", [ "Two of Clubs"; "Nine of Diamonds" ], 11);
+      ("Dealer", [ "Three of Clubs"; "Nine of Diamonds" ], 12, false);
+    player_test "Dealer busted" d_busted
+      ( "Dealer",
+        [ "Three of Clubs"; "Nine of Diamonds"; "Queen of Hearts" ],
+        22,
+        true );
   ]
 
 let command_tests =
@@ -356,6 +374,10 @@ let st2 = complete_hand st1
 let _ = print_endline "Dealer completes his hand"
 let _ = print_players (list_of_players st2)
 let _ = print_dealer (st2 |> dealer_of |> show_hand)
+let st3 = reset_all st2
+let _ = print_endline "Reset hands of all players and the dealer"
+let _ = print_players (list_of_players st3)
+let _ = print_dealer (st3 |> dealer_of |> show_hand)
 
 let state_tests =
   [
@@ -366,6 +388,8 @@ let state_tests =
       InvalidInput;
     state_hiddencard_test "test dealing a card to a player" 2 st1;
     state_completedealer_test "test dealer completes hand" 2 st2;
+    state_resetall_test "test hand of cards is reset for all players"
+      st3;
   ]
 
 let suite =
