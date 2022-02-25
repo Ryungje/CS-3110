@@ -62,5 +62,7 @@ val parse_command : string -> command
     Raises: [Empty] if [i] is an empty string or contains only spaces.
 
     Raises [Malformed] is command is malformed. A command is malformed
-    if the verb is not "hit","stand", "play", or "quit", or if the verb
-    is followed by more words. *)
+    if the verb is not "hit","stand" or "play", or if the verb is
+    followed by more words.
+
+    Raises: [Escape] if the verb is "quit". *)
