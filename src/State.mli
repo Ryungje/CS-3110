@@ -24,6 +24,18 @@ val init_state : int -> int -> string list -> s
     Raises: [InvalidInput] if length of the list [player_names] is not
     equal to[num_player] *)
 
+val players_of : s -> player list
+(** [player_of st] is the list of players from [st]. Requires: [st] is a
+    valid state. *)
+
+val dealer_of : s -> player
+(** [dealer_of st] is the list of cards in the dealer's hand from [st].
+    Requires: [st] is a valid state. *)
+
+val remaining_deck : s -> deck
+(** [remaining_deck st] is the list of remaining cards in the deck.
+    Requires: [st] is a valid state. *)
+
 val deal : string -> s -> s
 (** [deal pname st] is the state of the game after player with the name
     [pname] wants to hit and receives another card. Requires: [pname] is
@@ -36,17 +48,9 @@ val complete_hand : s -> s
 
 val reset_all : s -> s
 (** [reset_all st] is the state of the game [st] after all the players
-    and the dealer reset their hands, but all names, bets, and collected
-    rewards remain the same. *)
+    and the dealer reset their hands and each receive 2 new cards, but
+    all names, bets, and collected rewards remain the same. *)
 
 val list_of_players : s -> (string * string list) list
 (** [list_of_players st] is a list containing the name and list of cards
     in each player's hand from [st]. Requires: [st] is a valid state. *)
-
-val dealer_of : s -> player
-(** [hand_of_dealer st] is the list of cards in the dealer's hand from
-    [st]. Requires: [st] is a valid state. *)
-
-val remaining_deck : s -> deck
-(** [remaining_deck st] is the list of remaining cards in the deck.
-    Requires: [st] is a valid state. *)

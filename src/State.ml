@@ -9,6 +9,10 @@ type s = {
   card_deck : deck;
 }
 
+let players_of st = st.players
+let dealer_of st = st.dealer
+let remaining_deck st = st.card_deck
+
 let rec deal_to_all_players player_list deck acc =
   match player_list with
   | [] -> (acc, deck)
@@ -74,7 +78,22 @@ let complete_hand st =
 let reset_all st =
   let reset_players = List.map (fun p -> reset_hand p) st.players in
   let reset_dealer = reset_hand st.dealer in
-  { st with players = reset_players; dealer = reset_dealer }
+  let curr_deck = remaining_deck st in
+  let dealer_with_card = add_card (peek curr_deck) reset_dealer in
+  let players_with_1card, new_deck =
+    deal_to_all_players reset_players (pop curr_deck) []
+  in
+  let dealer_with_hidden =
+    add_hidden (peek new_deck) dealer_with_card
+  in
+  let players_with_2cards, end_deck =
+    deal_to_all_players players_with_1card (pop new_deck) []
+  in
+  {
+    players = players_with_2cards;
+    dealer = dealer_with_hidden;
+    card_deck = end_deck;
+  }
 
 let list_of_players st =
   let rec get_players p_list acc =
@@ -83,6 +102,3 @@ let list_of_players st =
     | h :: t -> get_players t (acc @ [ (name_of h, show_hand h) ])
   in
   get_players st.players []
-
-let dealer_of st = st.dealer
-let remaining_deck st = st.card_deck
