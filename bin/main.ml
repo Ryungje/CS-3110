@@ -134,7 +134,7 @@ let rec num_players _ =
 (** [main ()] prompts for the game to play, then starts it. *)
 let main () =
   ANSITerminal.print_string [ ANSITerminal.red ]
-    "\n\nWelcome to OCasino.\n";
+    "\n\nWelcome to OCasino's BlackJack.\n";
   num_players ()
 
 (* Execute the game engine. *)
