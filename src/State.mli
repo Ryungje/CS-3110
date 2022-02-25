@@ -34,6 +34,11 @@ val complete_hand : s -> s
     completes his hand (i.e. the dealer keeps taking cards until the
     total is 17 or higher. Requires: [st] is a valid state. *)
 
+val reset_all : s -> s
+(** [reset_all st] is the state of the game [st] after all the players
+    and the dealer reset their hands, but all names, bets, and collected
+    rewards remain the same. *)
+
 val list_of_players : s -> (string * string list) list
 (** [list_of_players st] is a list containing the name and list of cards
     in each player's hand from [st]. Requires: [st] is a valid state. *)

@@ -71,6 +71,11 @@ let complete_hand st =
   in
   { st with dealer = complete_dealer; card_deck = new_deck }
 
+let reset_all st =
+  let reset_players = List.map (fun p -> reset_hand p) st.players in
+  let reset_dealer = reset_hand st.dealer in
+  { st with players = reset_players; dealer = reset_dealer }
+
 let list_of_players st =
   let rec get_players p_list acc =
     match p_list with
