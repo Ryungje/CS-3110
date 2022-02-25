@@ -1,8 +1,8 @@
 (** Representation of a player (dealer included).
 
-    Note: A normal player can have a name, hold a hand of cards, bet,
-    and collect rewards. A dealer is a special type of player that
-    cannot bet but can have a hidden card.
+    A valid player can have a name, hold a hand of cards, bet, and
+    collect rewards. A dealer is a special type of valid player that can
+    have a hidden card but cannot bet.
 
     This module represents the data stored within each player
     participating in the game. It handles alterations to the data and
@@ -44,6 +44,11 @@ val show_hand : player -> string list
 val hand_value : player -> int
 (** [hand_value p] is the value of the cards currently in the hands of
     player [p]. Requires: [p] must be a valid player. *)
+
+val is_bust : player -> bool
+(** [is_bust p] is whether the player's hand busted (i.e. the value of
+    the player's hand is greater than 21). Requires: [p] must be a valid
+    player. *)
 
 val reset_hand : player -> player
 (** [reset_hand p] is the player with an empty hand. Requires: [p] must

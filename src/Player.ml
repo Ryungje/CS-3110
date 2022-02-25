@@ -29,6 +29,7 @@ let add_card c p =
 
 let show_hand p = p.hand
 let hand_value p = p.value
+let is_bust p = p.value > 21
 let reset_hand p = { p with hand = []; value = 0 }
 let add_hidden c p = { p with hidden_card = c }
 
