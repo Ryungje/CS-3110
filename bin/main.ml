@@ -24,9 +24,13 @@ let rec print_results plist dvalue =
   | [] -> ()
   | h :: t ->
       let _ =
-        if dvalue > 21 || hand_value h > dvalue then
-          print_endline (name_of h ^ " won!")
-        else print_endline (name_of h ^ " lost!")
+        if dvalue > 21 || (hand_value h > dvalue && hand_value h <= 21)
+        then print_endline (name_of h ^ " won!")
+        else
+          (*think about this later: if they tie, the person with less
+            cards wins and if they have the same number of cards, then
+            bet just returns to the player*)
+          print_endline (name_of h ^ " lost!")
       in
       print_results t dvalue
 
@@ -48,7 +52,12 @@ let rec get_player_command st plist n =
         let new_st = deal (name_of p) st in
         let updated_p = List.nth (players_of new_st) n in
         if is_bust updated_p then
-          let _ = print_endline (name_of updated_p ^ " busted!\n") in
+          let _ =
+            print_endline
+              (name_of updated_p ^ "'s hand: "
+              ^ String.concat ", " (show_hand updated_p));
+            print_endline (name_of updated_p ^ " busted!\n")
+          in
           get_player_command new_st plist (n + 1)
         else get_player_command new_st (players_of new_st) n
     | exception _ ->
