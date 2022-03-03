@@ -1,7 +1,7 @@
 1. OPAM housekeeping: We need to install ANISTerminal before running the game, so type in the following commands into terminal
   $ opam update
   $ opam upgrade
-  $ opam upgrade
+  $ opam install ANSITerminal
 2. download blackjack.zip
 3. change directory to the folder containing blackjack.zip
 4. type the following command into terminal: 
