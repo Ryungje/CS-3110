@@ -234,10 +234,13 @@ let state_completedealer_test
 
 let state_resetall_test (name : string) (st0 : State.s) : test =
   name >:: fun _ ->
-  assert_equal 0
-    (let st = st0 in
-     let plist = list_of_players st in
-     count plist 0 + List.length (st |> dealer_of |> show_hand))
+  let st = st0 in
+  let plist = list_of_players st in
+  let ncards =
+    count plist 0 + List.length (st |> dealer_of |> show_hand)
+  in
+  let nplayers = List.length plist in
+  assert_equal ncards ((2 * nplayers) + 1)
 
 (** [print_players p_list] prints the name and hand of each player in
     [p_list] to check if state functions are working. *)
