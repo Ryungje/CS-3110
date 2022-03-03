@@ -2,10 +2,10 @@
   $ opam update
   $ opam upgrade
   $ opam install ANSITerminal
-2. download blackjack.zip
+2. download blackjack.zip and place it into an empty folder
 3. change directory to the folder containing blackjack.zip
 4. type the following command into terminal: 
   $ unzip blackjack.zip
-  $ make build
+5. change directory to the folder opened by the unzip command and type the following command into terminal: 
   $ make play
 5. Congratulations, you can now play the game from your terminal. 
