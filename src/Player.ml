@@ -31,7 +31,7 @@ let show_hand p = p.hand
 let hand_value p = p.value
 let is_bust p = p.value > 21
 let reset_hand p = { p with hand = []; value = 0; bet = 0 }
-let bet amount p = { p with bet = amount }
+let bet amount p = { p with bet = p.bet + amount }
 
 let redeem operator p =
   { p with bet = 0; total = operator p.bet p.total }
