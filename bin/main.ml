@@ -19,20 +19,25 @@ let rec game_again _ =
       game_again ()
 
 (* Step 4b: print out results *)
-let rec print_results plist dvalue =
+let rec print_results plist d =
   match plist with
   | [] -> ()
   | h :: t ->
       let _ =
-        if dvalue > 21 || (hand_value h > dvalue && hand_value h <= 21)
+        let dvalue = hand_value d in
+        if
+          dvalue > 21
+          || (hand_value h > dvalue && hand_value h <= 21)
+          || hand_value h = dvalue
+             && List.length (show_hand h) < List.length (show_hand d)
         then print_endline (name_of h ^ " won!")
-        else
-          (*think about this later: if they tie, the person with less
-            cards wins and if they have the same number of cards, then
-            bet just returns to the player*)
-          print_endline (name_of h ^ " lost!")
+        else if
+          hand_value h = dvalue
+          && List.length (show_hand h) = List.length (show_hand d)
+        then print_endline (name_of h ^ " tied!")
+        else print_endline (name_of h ^ " lost!")
       in
-      print_results t dvalue
+      print_results t d
 
 (* Step 4a: players give commands to complete hand *)
 let rec get_player_command st plist n =
@@ -88,7 +93,7 @@ let rec play_game st =
     else ();
     print_newline ();
     print_endline "Results: ";
-    print_results (players_of end_st) (end_st |> dealer_of |> hand_value);
+    print_results (players_of end_st) (end_st |> dealer_of);
     print_newline ();
     if game_again () then play_game (reset_all end_st) else exit 0
   in
