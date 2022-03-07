@@ -73,14 +73,21 @@ let pop_newdeck_test
 
 (** [player_test name p expected_output] constructs an OUnit test named
     [name] that asserts the quality [expected_output] with ([name_of p],
-    [show_hand p], [hand_value p], [is_bust p])*)
+    [show_hand p], [hand_value p], [is_bust p], [current_bet p],
+    [current_total p])*)
 let player_test
     (name : string)
     (p : Player.player)
-    (expected_output : string * string list * int * bool) : test =
+    (expected_output : string * string list * int * bool * int * int) :
+    test =
   name >:: fun _ ->
   assert_equal expected_output
-    (name_of p, show_hand p, hand_value p, is_bust p)
+    ( name_of p,
+      show_hand p,
+      hand_value p,
+      is_bust p,
+      current_bet p,
+      current_total p )
 
 (** [parse_number_test name i expected_output] constructs an OUnit test
     named [name] that asserts the quality of [expected_output] with
@@ -270,11 +277,18 @@ let one_card_deck = repeat pop 51 (reset 1)
 
 (* Sample players *)
 let p0 = init_stats "Bob Carlos"
+let p0bet = p0 |> add_bet 20 |> add_bet 15
+let p0collect = p0bet |> redeem ( + )
+let p0pay = p0bet |> redeem ( - )
 
 let p1 =
   p0
   |> add_card ("Five of Hearts", 5)
   |> add_card ("Queen of Spades", 10)
+
+let p1betredeem =
+  p1 |> add_bet 10 |> redeem ( + ) |> add_bet 20 |> redeem ( - )
+  |> add_bet 5
 
 let p_none = reset_hand p1
 
@@ -302,19 +316,46 @@ let cards_tests =
 
 let player_tests =
   [
-    player_test "Player with no hand" p0 ("Bob Carlos", [], 0, false);
+    player_test "Player with no hand" p0
+      ("Bob Carlos", [], 0, false, 0, 0);
     player_test "Player with a hand" p1
-      ("Bob Carlos", [ "Five of Hearts"; "Queen of Spades" ], 15, false);
-    player_test "Reset player's hand" p_none ("Bob Carlos", [], 0, false);
+      ( "Bob Carlos",
+        [ "Five of Hearts"; "Queen of Spades" ],
+        15,
+        false,
+        0,
+        0 );
+    player_test "Reset player's hand" p_none
+      ("Bob Carlos", [], 0, false, 0, 0);
     player_test "Dealer with hidden card" d_with_hidden
-      ("Dealer", [ "Three of Clubs" ], 3, false);
+      ("Dealer", [ "Three of Clubs" ], 3, false, 0, 0);
     player_test "Dealer revealed hidden card" d_revealed
-      ("Dealer", [ "Three of Clubs"; "Nine of Diamonds" ], 12, false);
+      ( "Dealer",
+        [ "Three of Clubs"; "Nine of Diamonds" ],
+        12,
+        false,
+        0,
+        0 );
     player_test "Dealer busted" d_busted
       ( "Dealer",
         [ "Three of Clubs"; "Nine of Diamonds"; "Queen of Hearts" ],
         22,
-        true );
+        true,
+        0,
+        0 );
+    player_test "Player with no hand increases bet" p0bet
+      ("Bob Carlos", [], 0, false, 35, 0);
+    player_test "Player with no hand collects bet" p0collect
+      ("Bob Carlos", [], 0, false, 0, 35);
+    player_test "Player with no hand pays bet" p0pay
+      ("Bob Carlos", [], 0, false, 0, -35);
+    player_test "Player with a hand" p1betredeem
+      ( "Bob Carlos",
+        [ "Five of Hearts"; "Queen of Spades" ],
+        15,
+        false,
+        5,
+        -10 );
   ]
 
 let command_tests =

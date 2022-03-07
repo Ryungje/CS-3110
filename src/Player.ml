@@ -29,15 +29,17 @@ let add_card c p =
 
 let show_hand p = p.hand
 let hand_value p = p.value
+let current_bet p = p.bet
+let current_total p = p.total
 let is_bust p = p.value > 21
 let reset_hand p = { p with hand = []; value = 0; bet = 0 }
-let bet amount p = { p with bet = p.bet + amount }
-
-let redeem operator p =
-  { p with bet = 0; total = operator p.bet p.total }
-
 let add_hidden c p = { p with hidden_card = c }
 
 let reveal p =
   let new_p = add_card p.hidden_card p in
   { new_p with hidden_card = ("", 0) }
+
+let add_bet amount p = { p with bet = p.bet + amount }
+
+let redeem operator p =
+  { p with bet = 0; total = operator p.total p.bet }

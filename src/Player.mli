@@ -45,6 +45,13 @@ val hand_value : player -> int
 (** [hand_value p] is the value of the cards currently in the hands of
     player [p]. Requires: [p] must be a valid player. *)
 
+val current_bet : player -> int
+(** [current_bet p] is the total amount of bet that [p] placed in its
+    current hand of cards. *)
+
+val current_total : player -> int
+(** [current_total p] is the total amount that [p] has in pocket. *)
+
 val is_bust : player -> bool
 (** [is_bust p] is whether the player's hand busted (i.e. the value of
     the player's hand is greater than 21). Requires: [p] must be a valid
@@ -63,3 +70,12 @@ val add_hidden : string * int -> player -> player
 val reveal : player -> player
 (** [reveal d] is the dealer [d] who added their hidden card to their
     shown hand. Requires: d] must be a valid dealer. *)
+
+val add_bet : int -> player -> player
+(** [add_bet amount p] is the player after [p] increases its bet by
+    [amount]. Requires: [amount] > 0. *)
+
+val redeem : (int -> int -> int) -> player -> player
+(** [redeem operator p] is the player after [p] adds its bet to its
+    total according to [operator] and resets its bet to nothing.
+    Requires: [operator] should be (+) or (-). *)
