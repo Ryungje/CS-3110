@@ -1,6 +1,7 @@
 type command =
   | Hit
   | Stand
+  | Bet of int
   | Play
 
 exception Empty
@@ -37,11 +38,15 @@ let parse_command str =
     List.filter (fun x -> x <> "") (String.split_on_char ' ' str)
   in
   if word_list = [] then raise Empty
-  else if List.length word_list > 1 then raise Malformed
   else
+    let len = List.length word_list in
     match List.hd word_list with
-    | "hit" -> Hit
-    | "stand" -> Stand
-    | "play" -> Play
-    | "quit" -> raise Escape
+    | "hit" when len = 1 -> Hit
+    | "stand" when len = 1 -> Stand
+    | "bet" -> (
+        match parse_number (String.concat " " (List.tl word_list)) with
+        | exception _ -> raise Malformed
+        | i -> Bet i)
+    | "play" when len = 1 -> Play
+    | "quit" when len = 1 -> raise Escape
     | _ -> raise Malformed

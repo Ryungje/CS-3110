@@ -388,6 +388,7 @@ let command_tests =
     parse_name_exception_test "Parse quit" "quit" [] Escape;
     parse_command_test "Parse hit command" "  hit " Hit;
     parse_command_test "Parse stand command" "stand " Stand;
+    parse_command_test "Parse bet 9 command" " bet  9 " (Bet 9);
     parse_command_test "Parse play command" "  play" Play;
     parse_command_exception_test "Parse empty command" "" Empty;
     parse_command_exception_test "Parse space only command" "    " Empty;
@@ -397,6 +398,18 @@ let command_tests =
       "stand up" Malformed;
     parse_command_exception_test "Parse invalid command for play"
       "play again" Malformed;
+    parse_command_exception_test
+      "Parse invalid command for bet with too many integers"
+      "   bet 10 18" Malformed;
+    parse_command_exception_test
+      "Parse invalid bet command with a negative integer" "bet -10"
+      Malformed;
+    parse_command_exception_test
+      "Parse invalid bet command with a float value" "bet 9.87"
+      Malformed;
+    parse_command_exception_test
+      "Parse invalid bet command with a non-numeric input" "bet a pony"
+      Malformed;
     parse_command_exception_test "Parse invalid command for quit"
       "quit game now" Malformed;
     parse_command_exception_test
