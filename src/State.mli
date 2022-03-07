@@ -12,14 +12,14 @@ exception InvalidInput
 type s
 (** The abstract type of values representing the game state. *)
 
-val init_state : int -> int -> string list -> s
-(** [init_state num_deck num_player player_names] is the initial state
-    of the game when playing Blackjack with [num_deck] amount of
-    standard card decks, [num_player] amount of players (not including
-    the dealer), and [player_names] as the ordered list of names
-    corresponding to player 1, player 2, and etc. Each player should be
-    dealt 2 cards. The dealer should be dealt one shown card and one
-    hidden card.
+val init_state : int -> int -> string list -> int list -> s
+(** [init_state num_deck num_player player_names bet_list] is the
+    initial state of the game when playing Blackjack with [num_deck]
+    amount of standard card decks, [num_player] amount of players (not
+    including the dealer), [player_names] and [bet_list] as the ordered
+    list of names and total starting chips corresponding to player 1,
+    player 2, and etc. Each player should be dealt 2 cards. The dealer
+    should be dealt one shown card and one hidden card.
 
     Raises: [InvalidInput] if length of the list [player_names] is not
     equal to[num_player] *)
@@ -40,6 +40,17 @@ val deal : string -> s -> s
 (** [deal pname st] is the state of the game after player with the name
     [pname] wants to hit and receives another card. Requires: [pname] is
     the name of a valid player part of a valid state [st]. *)
+
+val increase_bet : int -> string -> s -> s
+(** [increase_bet amount pname st] is the state of the game after player
+    with the name [pname] increases bet by [amount]. Requires: [pname]
+    is the name of a valid player part of a valid state [st]. *)
+
+val redeem_bet : (int -> int -> int) -> string -> s -> s
+(** [increase_bet operator pname st] is the state of the game after
+    player with the name [pname] redeems bet according to [operator].
+    Requires: [pname] is the name of a valid player part of a valid
+    state [st]. *)
 
 val complete_hand : s -> s
 (** [complete_hand st] is the state of the game [st] after the dealer

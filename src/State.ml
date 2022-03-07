@@ -20,16 +20,20 @@ let rec deal_to_all_players player_list deck acc =
       deal_to_all_players t (pop deck) (acc @ [ add_card (peek deck) h ])
 
 let rec make_player_list n names acc =
-  if n = 0 then acc
-  else
-    match names with
-    | [] -> acc
-    | h :: t -> make_player_list (n - 1) t acc @ [ init_stats h ]
+  match names with
+  | [] -> acc
+  | h :: t -> make_player_list (n - 1) t (acc @ [ init_stats h ])
 
-let init_state num_deck num_player player_names =
+let init_state num_deck num_player player_names bet_list =
   if num_player <> List.length player_names then raise InvalidInput
   else
-    let player_list = make_player_list num_player player_names [] in
+    let player_list_no_bets =
+      make_player_list num_player player_names []
+    in
+    let player_list_with_bets =
+      List.map2 add_bet bet_list player_list_no_bets
+    in
+    let player_list = List.map (redeem ( + )) player_list_with_bets in
     let new_dealer = init_stats "Dealer" in
     let curr_deck = reset num_deck |> shuffle in
     let dealer_with_card = add_card (peek curr_deck) new_dealer in
@@ -64,6 +68,28 @@ let deal pname st =
     players = updated_player_list;
     card_deck = pop st.card_deck;
   }
+
+let rec add_bet_to amount pname p_list acc =
+  match p_list with
+  | [] -> acc
+  | h :: t ->
+      if name_of h = pname then acc @ [ add_bet amount h ] @ t
+      else add_bet_to amount pname t (acc @ [ h ])
+
+let increase_bet amount pname st =
+  let updated_player_list = add_bet_to amount pname st.players [] in
+  { st with players = updated_player_list }
+
+let rec redeem_for operator pname p_list acc =
+  match p_list with
+  | [] -> acc
+  | h :: t ->
+      if name_of h = pname then acc @ [ redeem operator h ] @ t
+      else redeem_for operator pname t (acc @ [ h ])
+
+let redeem_bet operator pname st =
+  let updated_player_list = redeem_for operator pname st.players [] in
+  { st with players = updated_player_list }
 
 let rec adding_cards p d =
   if hand_value p < 17 then adding_cards (add_card (peek d) p) (pop d)

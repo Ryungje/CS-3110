@@ -163,10 +163,11 @@ let init_state_test
     (name : string)
     (num_deck : int)
     (num_player : int)
-    (player_names : string list) : test =
+    (player_names : string list)
+    (bet_list : int list) : test =
   name >:: fun _ ->
   assert_equal true
-    (let st = init_state num_deck num_player player_names in
+    (let st = init_state num_deck num_player player_names bet_list in
      let plist = list_of_players st in
      let num_cards =
        count plist 0 + List.length (st |> dealer_of |> show_hand)
@@ -184,9 +185,10 @@ let init_state_exception_test
     (num_deck : int)
     (num_player : int)
     (player_names : string list)
+    (bet_list : int list)
     e : test =
   name >:: fun _ ->
-  let f () = init_state num_deck num_player player_names in
+  let f () = init_state num_deck num_player player_names bet_list in
   assert_raises e f
 
 (** [state_hiddencard_test name num_deck st] constructs an OUnit test
@@ -419,14 +421,19 @@ let command_tests =
     parse_command_exception_test "Parse quit" "quit" Escape;
   ]
 
-let st0 = init_state 2 3 [ "Bob"; "Alice"; "Henry" ]
+let st0 = init_state 2 3 [ "Bob"; "Alice"; "Henry" ] [ 1; 2; 3 ]
 let _ = print_endline "Initial state"
 let _ = print_players (list_of_players st0)
 let _ = print_dealer (st0 |> dealer_of |> show_hand)
-let st1 = deal "Alice" st0
+let st1 = deal "Alice" st0 |> increase_bet 5 "Henry"
 let _ = print_endline "Alice gets another card"
 let _ = print_players (list_of_players st1)
 let _ = print_dealer (st1 |> dealer_of |> show_hand)
+
+let _ =
+  List.map current_bet (players_of st1)
+  |> List.map string_of_int |> String.concat ", " |> print_endline
+
 let st2 = complete_hand st1
 let _ = print_endline "Dealer completes his hand"
 let _ = print_players (list_of_players st2)
@@ -436,13 +443,19 @@ let _ = print_endline "Reset hands of all players and the dealer"
 let _ = print_players (list_of_players st3)
 let _ = print_dealer (st3 |> dealer_of |> show_hand)
 
+let _ =
+  List.map current_total (players_of st3)
+  |> List.map string_of_int |> String.concat ", " |> print_endline
+
 let state_tests =
   [
-    init_state_test "test initial state" 2 3 [ "Bob"; "Alice"; "Henry" ];
+    init_state_test "test initial state" 2 3
+      [ "Bob"; "Alice"; "Henry" ]
+      [ 1; 2; 3 ];
     init_state_exception_test
       "test that init_state raises InvalidInput exception" 2 4
       [ "Bob"; "Alice"; "Henry" ]
-      InvalidInput;
+      [ 1; 2; 3 ] InvalidInput;
     state_hiddencard_test "test dealing a card to a player" 2 st1;
     state_completedealer_test "test dealer completes hand" 2 st2;
     state_resetall_test "test hand of cards is reset for all players"
