@@ -196,7 +196,6 @@ let init_state_exception_test
     dealers hands of [st] is equal to the number of cards taken from the
     deck (num_deck*52 - length_of_deck). Requires: [st] is a valid game
     state and the dealer currently had a hidden card. *)
-
 let state_hiddencard_test
     (name : string)
     (num_deck : int)
@@ -250,6 +249,30 @@ let state_resetall_test (name : string) (st0 : State.s) : test =
   in
   let nplayers = List.length plist in
   assert_equal ncards ((2 * nplayers) + 1)
+
+let get_bet_tup (st : State.s) =
+  ( st |> players_of |> List.map current_bet,
+    st |> players_of |> List.map current_total )
+
+let state_increasebet_test
+    (name : string)
+    (amount : int)
+    (pname : string)
+    (st : State.s)
+    (expected_output : int list * int list) : test =
+  name >:: fun _ ->
+  assert_equal expected_output
+    (increase_bet amount pname st |> get_bet_tup)
+
+let state_redeembet_test
+    (name : string)
+    (operator : int -> int -> int)
+    (pname : string)
+    (st : State.s)
+    (expected_output : int list * int list) : test =
+  name >:: fun _ ->
+  assert_equal expected_output
+    (redeem_bet operator pname st |> get_bet_tup)
 
 (** [print_players p_list] prints the name and hand of each player in
     [p_list] to check if state functions are working. *)
@@ -460,6 +483,15 @@ let state_tests =
     state_completedealer_test "test dealer completes hand" 2 st2;
     state_resetall_test "test hand of cards is reset for all players"
       st3;
+    state_increasebet_test "test increasing bet by 3 for one player" 3
+      "Alice" st0
+      ([ 0; 3; 0 ], [ 1; 2; 3 ]);
+    state_redeembet_test "test addition to one player's total" ( + )
+      "Henry" st1
+      ([ 0; 0; 0 ], [ 1; 2; 8 ]);
+    state_redeembet_test "test subtraction from one player's total"
+      ( - ) "Henry" st1
+      ([ 0; 0; 0 ], [ 1; 2; -2 ]);
   ]
 
 let suite =
