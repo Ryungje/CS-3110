@@ -4,7 +4,7 @@ open Player
 open Commands
 open State
 
-(* Step 4d: see if players want to play again or quit *)
+(* Step 4g: see if players want to play again or quit *)
 let rec game_again _ =
   print_string "Would you like to [play] again or [quit]? ";
   match parse_command (read_line ()) with
@@ -18,7 +18,7 @@ let rec game_again _ =
       print_endline "Invalid command! Try again.";
       game_again ()
 
-(* Step 4ci: help updated player total by (+) if player won or by (-) if
+(* Step 4fi: help updated player total by (+) if player won or by (-) if
    player lost *)
 let update_player_total operator pname st =
   let new_st = redeem_bet operator pname st in
@@ -27,7 +27,7 @@ let update_player_total operator pname st =
   in
   (List.hd new_player, new_st)
 
-(* Step 4c: print out results *)
+(* Step 4f: print out results after a full round *)
 let rec print_results plist d st =
   match plist with
   | [] -> st
@@ -65,7 +65,7 @@ let rec print_results plist d st =
         in
         print_results t d new_st
 
-(* Step 4b: players give commands to complete hand *)
+(* Step 4d: players give commands to complete hand *)
 let rec get_player_command st plist n =
   if n < List.length plist then (
     let p = List.nth (players_of st) n in
@@ -106,6 +106,33 @@ let rec get_player_command st plist n =
         get_player_command st plist n)
   else st
 
+(* Step 4e: print out results after natural (s) *)
+let rec print_results_from_natural plist =
+  match plist with
+  | [] -> ()
+  | h :: t ->
+      let str = name_of h ^ "'s remaining chips: " in
+      print_endline (str ^ string_of_int (current_total h));
+      print_results_from_natural t
+
+(* Step 4c: handle the scenario where one of the players or the dealer
+   has a natural *)
+let handle_naturals st =
+  if not (is_dealer_natural (dealer_of st)) then
+    (* dealer does not have natural so pay the players with a natural *)
+    unnatural_dealer_natural_player st
+  else natural_dealer_unnatural_player st
+
+(* Step 4b: print out starting two cards of each player *)
+let rec print_player_starting_cards st plist n =
+  if n < List.length plist then (
+    let p = List.nth (players_of st) n in
+    print_endline
+      (name_of p ^ "'s hand: " ^ String.concat ", " (show_hand p));
+    if is_natural p then print_endline (name_of p ^ " has a natural!")
+    else print_player_starting_cards st plist (n + 1))
+  else ()
+
 (* Step 4a: get starting bets of all players at beginning of each
    round *)
 let rec get_player_bets st acc =
@@ -129,30 +156,43 @@ let rec play_game num_rounds st =
   let _ =
     print_endline ("\nRound " ^ string_of_int num_rounds ^ ":");
     let bet_st = get_player_bets st 0 in
-    print_newline ();
     print_endline "\nShuffling cards... Dealing to players... ";
     print_endline
       ("Dealer's hand: "
-      ^ String.concat ", " (bet_st |> dealer_of |> show_hand)
-      ^ "\n");
-    let new_st = get_player_command bet_st (players_of st) 0 in
-    let end_st = complete_hand new_st in
-    print_endline "Completing Dealer's hand...";
-    print_endline
-      ("Dealer's hand: "
-      ^ String.concat ", " (end_st |> dealer_of |> show_hand));
-    if end_st |> dealer_of |> hand_value > 21 then
-      print_endline "Dealer busted!"
+      ^ String.concat ", " (bet_st |> dealer_of |> show_hand));
+    if is_dealer_natural (bet_st |> dealer_of) then
+      print_endline "Dealer has a natural"
     else ();
+    print_player_starting_cards bet_st (players_of bet_st) 0;
     print_newline ();
-    print_endline "Results: ";
-    let final_st =
-      print_results (players_of end_st) (end_st |> dealer_of) end_st
-    in
-    print_newline ();
-    if game_again () then
-      play_game (num_rounds + 1) (reset_all final_st)
-    else exit 0
+    if
+      List.filter is_natural (players_of bet_st) |> List.length <> 0
+      || is_dealer_natural (bet_st |> dealer_of)
+    then (
+      let new_st = handle_naturals bet_st in
+      let end_st = reset_all new_st in
+      print_results_from_natural (players_of end_st);
+      print_newline ();
+      play_game (num_rounds + 1) end_st)
+    else
+      let new_st = get_player_command bet_st (players_of st) 0 in
+      let end_st = complete_hand new_st in
+      print_endline "Completing Dealer's hand...";
+      print_endline
+        ("Dealer's hand: "
+        ^ String.concat ", " (end_st |> dealer_of |> show_hand));
+      if end_st |> dealer_of |> hand_value > 21 then
+        print_endline "Dealer busted!"
+      else ();
+      print_newline ();
+      print_endline "Results: ";
+      let final_st =
+        print_results (players_of end_st) (end_st |> dealer_of) end_st
+      in
+      print_newline ();
+      if game_again () then
+        play_game (num_rounds + 1) (reset_all final_st)
+      else exit 0
   in
   ()
 

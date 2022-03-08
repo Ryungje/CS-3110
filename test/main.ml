@@ -196,7 +196,6 @@ let init_state_exception_test
     dealers hands of [st] is equal to the number of cards taken from the
     deck (num_deck*52 - length_of_deck). Requires: [st] is a valid game
     state and the dealer currently had a hidden card. *)
-
 let state_hiddencard_test
     (name : string)
     (num_deck : int)
@@ -262,6 +261,56 @@ let redeem_for_natural_test
       current_total (redeem_for_natural b p) )
     expected_output
 
+let get_bet_tup (st : State.s) =
+  ( st |> players_of |> List.map current_bet,
+    st |> players_of |> List.map current_total )
+
+let state_increasebet_test
+    (name : string)
+    (amount : int)
+    (pname : string)
+    (st : State.s)
+    (expected_output : int list * int list) : test =
+  name >:: fun _ ->
+  assert_equal expected_output
+    (increase_bet amount pname st |> get_bet_tup)
+
+let state_redeembet_test
+    (name : string)
+    (operator : int -> int -> int)
+    (pname : string)
+    (st : State.s)
+    (expected_output : int list * int list) : test =
+  name >:: fun _ ->
+  assert_equal expected_output
+    (redeem_bet operator pname st |> get_bet_tup)
+
+(** [current_bet_test name p expected_output] constructs an OUnit test
+    named [name] that asserts the current_bet of the player [p] is the
+    same as [expected_output]*)
+let current_bet_test
+    (name : string)
+    (p : player)
+    (expected_output : int) : test =
+  name >:: fun _ -> assert_equal expected_output (current_bet p)
+
+(** [current_total_test name p expected_output] constructs an OUnit test
+    named [name] that asserts the current_total of the player [p] is the
+    same as [expected_output]*)
+let current_total_test
+    (name : string)
+    (p : player)
+    (expected_output : int) : test =
+  name >:: fun _ -> assert_equal expected_output (current_total p)
+
+(** [is_natural_test name p expected_output] constructs an OUnit test
+    named [name] that asserts the hand of the player [p] is the a
+    natural using the is_natural and compares output to
+    [expected_output]*)
+let natural_test (name : string) f (p : player) (expected_output : bool)
+    : test =
+  name >:: fun _ -> assert_equal expected_output (f p)
+
 (** [print_players p_list] prints the name and hand of each player in
     [p_list] to check if state functions are working. *)
 let rec print_players p_list =
@@ -312,6 +361,12 @@ let p5 = p2 |> redeem ( + ) |> add_bet 50
 let p1betredeem =
   p1 |> add_bet 10 |> redeem ( + ) |> add_bet 20 |> redeem ( - )
   |> add_bet 5
+
+let p2 =
+  p0 |> add_card ("Ace of Spades", 5) |> add_card ("Queen of Hearts", 5)
+
+let p3 =
+  p0 |> add_card ("Four of Spades", 5) |> add_card ("Ten of Clubs", 5)
 
 let p_none = reset_hand p1
 
@@ -489,6 +544,15 @@ let state_tests =
     state_completedealer_test "test dealer completes hand" 2 st2;
     state_resetall_test "test hand of cards is reset for all players"
       st3;
+    state_increasebet_test "test increasing bet by 3 for one player" 3
+      "Alice" st0
+      ([ 0; 3; 0 ], [ 1; 2; 3 ]);
+    state_redeembet_test "test addition to one player's total" ( + )
+      "Henry" st1
+      ([ 0; 0; 0 ], [ 1; 2; 8 ]);
+    state_redeembet_test "test subtraction from one player's total"
+      ( - ) "Henry" st1
+      ([ 0; 0; 0 ], [ 1; 2; -2 ]);
   ]
 
 let suite =
@@ -497,3 +561,11 @@ let suite =
          [ cards_tests; player_tests; command_tests; state_tests ]
 
 let _ = run_test_tt_main suite
+
+let natural_tests =
+  [
+    natural_test "p2 has natural hand" is_natural p2 true;
+    natural_test "p3 does not have natural hand" is_natural p3 false;
+    natural_test "d_with_hidden does not have natural hand"
+      is_dealer_natural d_with_hidden false;
+  ]
