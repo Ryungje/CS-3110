@@ -63,4 +63,6 @@ let redeem_for_natural b p =
   if b then { p with bet = 0; total = p.total + p.bet + (p.bet / 2) }
   else { p with bet = 0 }
 
-let is_dealer_natural p = p.value + snd p.hidden_card = 11
+let is_dealer_natural p =
+  let temp_card_lst = p.hand @ [ fst p.hidden_card ] in
+  is_natural { p with hand = temp_card_lst }
