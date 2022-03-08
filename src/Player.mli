@@ -79,3 +79,19 @@ val redeem : (int -> int -> int) -> player -> player
 (** [redeem operator p] is the player after [p] adds its bet to its
     total according to [operator] and resets its bet to nothing.
     Requires: [operator] should be (+) or (-). *)
+
+val is_natural : player -> bool
+(** [is_natural p] is whether or not the [p]] has a natural (i.e. the
+    player's first two cards is an ace and a ten-card). Requires: [p] is
+    a valid player who only has two cards. *)
+
+val redeem_for_natural : bool -> player -> player
+(** [is_natural p] is the player who collects 1.5 times their starting
+    bet if [b]. Otherwise, the player simply resets its bet back to
+    zero. Requires: [p] is a valid player. *)
+
+val is_dealer_natural : player -> bool
+(** [is_dealer_natural d] is whether or not the [d]] has a natural (i.e.
+    the the face-up card and hidden card makes a pair of ace and
+    ten-card). Requires: [d] is a valid dealer who only has one face-up
+    card and one hidden card. *)
