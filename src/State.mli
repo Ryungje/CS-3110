@@ -43,14 +43,17 @@ val deal : string -> s -> s
 
 val increase_bet : int -> string -> s -> s
 (** [increase_bet amount pname st] is the state of the game after player
-    with the name [pname] increases bet by [amount]. Requires: [pname]
-    is the name of a valid player part of a valid state [st]. *)
+    with the name [pname] increases bet by [amount]. All other
+    attributes of [st] should remain unchanged. Requires: [pname] is the
+    name of a valid player part of a valid state [st]. *)
 
 val redeem_bet : (int -> int -> int) -> string -> s -> s
 (** [increase_bet operator pname st] is the state of the game after
-    player with the name [pname] redeems bet according to [operator].
-    Requires: [pname] is the name of a valid player part of a valid
-    state [st]. *)
+    player with the name [pname] redeems bet according to [operator] in
+    [st]. This player should reset its bet back to zero and change its
+    total according to [operator]. All other attributes of [st] should
+    remain unchanged. Requires: [pname] is the name of a valid player
+    part of a valid state [st]. *)
 
 val complete_hand : s -> s
 (** [complete_hand st] is the state of the game [st] after the dealer

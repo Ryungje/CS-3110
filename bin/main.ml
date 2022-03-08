@@ -18,6 +18,8 @@ let rec game_again _ =
       print_endline "Invalid command! Try again.";
       game_again ()
 
+(* Step 4bi: help updated player total by (+) if player won or by (-) if
+   player lost *)
 let update_player_total operator pname st =
   let new_st = redeem_bet operator pname st in
   let new_player =
