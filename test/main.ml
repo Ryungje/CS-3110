@@ -251,6 +251,13 @@ let state_resetall_test (name : string) (st0 : State.s) : test =
   let nplayers = List.length plist in
   assert_equal ncards ((2 * nplayers) + 1)
 
+(** [currentbet_test name p expected_output] constructs an OUnit test
+    named [name] that asserts the current_bet of the player [p] is the
+    same as [expected_output]*)
+let currentbet_test (name : string) (p : player) (expected_output : int)
+    : test =
+  name >:: fun _ -> assert_equal expected_output (current_bet p)
+
 (** [print_players p_list] prints the name and hand of each player in
     [p_list] to check if state functions are working. *)
 let rec print_players p_list =
@@ -468,3 +475,4 @@ let suite =
          [ cards_tests; player_tests; command_tests; state_tests ]
 
 let _ = run_test_tt_main suite
+let bet_tests = []
