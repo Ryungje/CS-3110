@@ -251,6 +251,17 @@ let state_resetall_test (name : string) (st0 : State.s) : test =
   let nplayers = List.length plist in
   assert_equal ncards ((2 * nplayers) + 1)
 
+let redeem_for_natural_test
+    (name : string)
+    (b : bool)
+    (p : Player.player)
+    (expected_output : int * int) : test =
+  name >:: fun _ ->
+  assert_equal
+    ( current_bet (redeem_for_natural b p),
+      current_total (redeem_for_natural b p) )
+    expected_output
+
 (** [print_players p_list] prints the name and hand of each player in
     [p_list] to check if state functions are working. *)
 let rec print_players p_list =
@@ -287,6 +298,16 @@ let p1 =
   p0
   |> add_card ("Five of Hearts", 5)
   |> add_card ("Queen of Spades", 10)
+
+let p2 =
+  p0
+  |> add_card ("Ace of Hearts", 1)
+  |> add_card ("Ten of Spades", 10)
+  |> add_bet 50
+
+let p3 = p1 |> add_bet 50
+let p4 = p3 |> redeem ( + ) |> add_bet 50
+let p5 = p2 |> redeem ( + ) |> add_bet 50
 
 let p1betredeem =
   p1 |> add_bet 10 |> redeem ( + ) |> add_bet 20 |> redeem ( - )
@@ -358,6 +379,14 @@ let player_tests =
         false,
         5,
         -10 );
+    redeem_for_natural_test "Player with natural and inital total 0"
+      true p2 (0, 75);
+    redeem_for_natural_test "Player with no natural and intial total 0"
+      false p3 (0, 0);
+    redeem_for_natural_test "Player with natural and intial total 50"
+      true p4 (0, 125);
+    redeem_for_natural_test "Player with no natural and intial total 50"
+      false p5 (0, 50);
   ]
 
 let command_tests =
