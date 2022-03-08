@@ -4,7 +4,7 @@ open Player
 open Commands
 open State
 
-(* Step 4c: see if players want to play again or quit *)
+(* Step 4d: see if players want to play again or quit *)
 let rec game_again _ =
   print_string "Would you like to [play] again or [quit]? ";
   match parse_command (read_line ()) with
@@ -18,7 +18,7 @@ let rec game_again _ =
       print_endline "Invalid command! Try again.";
       game_again ()
 
-(* Step 4bi: help updated player total by (+) if player won or by (-) if
+(* Step 4ci: help updated player total by (+) if player won or by (-) if
    player lost *)
 let update_player_total operator pname st =
   let new_st = redeem_bet operator pname st in
@@ -27,7 +27,7 @@ let update_player_total operator pname st =
   in
   (List.hd new_player, new_st)
 
-(* Step 4b: print out results *)
+(* Step 4c: print out results *)
 let rec print_results plist d st =
   match plist with
   | [] -> st
@@ -65,7 +65,7 @@ let rec print_results plist d st =
         in
         print_results t d new_st
 
-(* Step 4a: players give commands to complete hand *)
+(* Step 4b: players give commands to complete hand *)
 let rec get_player_command st plist n =
   if n < List.length plist then (
     let p = List.nth (players_of st) n in
@@ -106,16 +106,36 @@ let rec get_player_command st plist n =
         get_player_command st plist n)
   else st
 
+(* Step 4a: get starting bets of all players at beginning of each
+   round *)
+let rec get_player_bets st acc =
+  if acc = List.length (players_of st) then st
+  else
+    let p = List.nth (players_of st) acc in
+    print_string ("Starting bet for " ^ name_of p ^ ": ");
+    match parse_number (read_line ()) with
+    | exception End_of_file -> st
+    | exception Escape -> exit 0
+    | exception _ ->
+        print_endline "Invalid integer! Try again.";
+        get_player_bets st acc
+    | i ->
+        let new_st = increase_bet i (name_of p) st in
+        get_player_bets new_st (acc + 1)
+
 (* Step 4: keep playing rounds of blackjack until players want to
    quit *)
-let rec play_game st =
+let rec play_game num_rounds st =
   let _ =
-    print_endline "\n\nShuffling cards... Dealing to players... ";
+    print_endline ("\nRound " ^ string_of_int num_rounds ^ ":");
+    let bet_st = get_player_bets st 0 in
+    print_newline ();
+    print_endline "\nShuffling cards... Dealing to players... ";
     print_endline
       ("Dealer's hand: "
-      ^ String.concat ", " (st |> dealer_of |> show_hand)
+      ^ String.concat ", " (bet_st |> dealer_of |> show_hand)
       ^ "\n");
-    let new_st = get_player_command st (players_of st) 0 in
+    let new_st = get_player_command bet_st (players_of st) 0 in
     let end_st = complete_hand new_st in
     print_endline "Completing Dealer's hand...";
     print_endline
@@ -130,7 +150,9 @@ let rec play_game st =
       print_results (players_of end_st) (end_st |> dealer_of) end_st
     in
     print_newline ();
-    if game_again () then play_game (reset_all final_st) else exit 0
+    if game_again () then
+      play_game (num_rounds + 1) (reset_all final_st)
+    else exit 0
   in
   ()
 
@@ -146,7 +168,8 @@ let rec get_num_decks nplayers name_list chips_list =
         get_num_decks nplayers name_list chips_list
     | i ->
         let st0 = init_state i nplayers name_list chips_list in
-        play_game st0
+        print_newline ();
+        play_game 1 st0
   in
   ()
 
