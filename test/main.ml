@@ -251,6 +251,9 @@ let state_resetall_test (name : string) (st0 : State.s) : test =
   let nplayers = List.length plist in
   assert_equal ncards ((2 * nplayers) + 1)
 
+let state_naturals_test (name : string) (st0 : State.s) : test =
+  name >:: fun _ -> assert_equal 1 1
+
 (** [is_natural_test name p expected_output] constructs an OUnit test
     named [name] that asserts the hand of the player [p] is the a
     natural using the is_natural and compares output to
@@ -325,7 +328,7 @@ let d_hidden_natural =
   |> add_card ("Ace of Spade", 5)
   |> add_hidden ("Ten of Clubs", 5)
 
-let d_natural_revealed = reveal d_hidden_natural
+let d_revealed_natural = reveal d_hidden_natural
 
 let _ =
   print_cards (shuffle card_deck) (List.length (cards_of card_deck))
