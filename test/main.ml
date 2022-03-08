@@ -348,15 +348,15 @@ let p1 =
   |> add_card ("Five of Hearts", 5)
   |> add_card ("Queen of Spades", 10)
 
-let p2 =
+let p4 =
   p0
   |> add_card ("Ace of Hearts", 1)
   |> add_card ("Ten of Spades", 10)
   |> add_bet 50
 
-let p3 = p1 |> add_bet 50
-let p4 = p3 |> redeem ( + ) |> add_bet 50
-let p5 = p2 |> redeem ( + ) |> add_bet 50
+let p5 = p1 |> add_bet 50
+let p6 = p5 |> redeem ( + ) |> add_bet 50
+let p7 = p4 |> redeem ( + ) |> add_bet 50
 
 let p1betredeem =
   p1 |> add_bet 10 |> redeem ( + ) |> add_bet 20 |> redeem ( - )
@@ -435,13 +435,13 @@ let player_tests =
         5,
         -10 );
     redeem_for_natural_test "Player with natural and inital total 0"
-      true p2 (0, 75);
+      true p4 (0, 75);
     redeem_for_natural_test "Player with no natural and intial total 0"
-      false p3 (0, 0);
-    redeem_for_natural_test "Player with natural and intial total 50"
-      true p4 (0, 125);
+      false p5 (0, 0);
     redeem_for_natural_test "Player with no natural and intial total 50"
-      false p5 (0, 50);
+      false p6 (0, 50);
+    redeem_for_natural_test "Player with  natural and intial total 50"
+      true p7 (0, 125);
   ]
 
 let command_tests =
