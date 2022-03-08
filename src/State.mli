@@ -55,6 +55,19 @@ val redeem_bet : (int -> int -> int) -> string -> s -> s
     remain unchanged. Requires: [pname] is the name of a valid player
     part of a valid state [st]. *)
 
+val unnatural_dealer_natural_player : s -> s
+(** [unnatural_dealer_natural_player st] is the state of the game [st]
+    after all natural players collect 1.5 times their bets and unnatural
+    players simply resets their bet back to zero. Only bet and total
+    attributes of players in [st] changes. Requires: dealer in [st] does
+    not have a natural and at least one player in [st] has a natural. *)
+
+val natural_dealer_unnatural_player : s -> s
+(** [unnatural_dealer_natural_player st] is the state of the game [st]
+    after where players with a natural simply reset their bet back to
+    zero and players without a natural must pay their bet to the dealer.
+    Requires: dealer in [st] has a natural. *)
+
 val complete_hand : s -> s
 (** [complete_hand st] is the state of the game [st] after the dealer
     completes his hand (i.e. the dealer keeps taking cards until the
