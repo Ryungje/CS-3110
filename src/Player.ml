@@ -66,3 +66,14 @@ let redeem_for_natural b p =
 let is_dealer_natural p =
   let temp_card_lst = p.hand @ [ fst p.hidden_card ] in
   is_natural { p with hand = temp_card_lst }
+
+let has_ace p =
+  List.filter (fun str -> String.sub str 0 3 = "Ace") p.hand <> []
+
+let ace_to_eleven p =
+  let sum =
+    List.fold_left
+      (fun acc c -> if String.sub c 0 3 = "Ace" then acc + 10 else acc)
+      0 p.hand
+  in
+  { p with value = p.value + sum }
