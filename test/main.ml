@@ -251,25 +251,6 @@ let state_resetall_test (name : string) (st0 : State.s) : test =
   let nplayers = List.length plist in
   assert_equal ncards ((2 * nplayers) + 1)
 
-<<<<<<< HEAD
-(** [current_bet_test name p expected_output] constructs an OUnit test
-    named [name] that asserts the current_bet of the player [p] is the
-    same as [expected_output]*)
-let current_bet_test
-    (name : string)
-    (p : player)
-    (expected_output : int) : test =
-  name >:: fun _ -> assert_equal expected_output (current_bet p)
-
-(** [current_total_test name p expected_output] constructs an OUnit test
-    named [name] that asserts the current_total of the player [p] is the
-    same as [expected_output]*)
-let current_total_test
-    (name : string)
-    (p : player)
-    (expected_output : int) : test =
-  name >:: fun _ -> assert_equal expected_output (current_total p)
-
 (** [is_natural_test name p expected_output] constructs an OUnit test
     named [name] that asserts the hand of the player [p] is the a
     natural using the is_natural and compares output to
@@ -278,8 +259,6 @@ let natural_test (name : string) f (p : player) (expected_output : bool)
     : test =
   name >:: fun _ -> assert_equal expected_output (f p)
 
-=======
->>>>>>> b727229db5019e57ff259e5f2d628309c26c8067
 (** [print_players p_list] prints the name and hand of each player in
     [p_list] to check if state functions are working. *)
 let rec print_players p_list =
@@ -329,7 +308,9 @@ let p3 =
 
 let p_none = reset_hand p1
 
-(* Sample dealer *)
+(* Sample dealers *)
+
+(* this one has unnatural hand *)
 let d_with_hidden =
   init_stats "Dealer"
   |> add_card ("Three of Clubs", 3)
@@ -337,6 +318,14 @@ let d_with_hidden =
 
 let d_revealed = reveal d_with_hidden
 let d_busted = d_revealed |> add_card ("Queen of Hearts", 10)
+
+(* this one has natural hand *)
+let d_hidden_natural =
+  init_stats "Dealer"
+  |> add_card ("Ace of Spade", 5)
+  |> add_hidden ("Ten of Clubs", 5)
+
+let d_natural_revealed = reveal d_hidden_natural
 
 let _ =
   print_cards (shuffle card_deck) (List.length (cards_of card_deck))
