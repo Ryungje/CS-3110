@@ -196,7 +196,6 @@ let init_state_exception_test
     dealers hands of [st] is equal to the number of cards taken from the
     deck (num_deck*52 - length_of_deck). Requires: [st] is a valid game
     state and the dealer currently had a hidden card. *)
-
 let state_hiddencard_test
     (name : string)
     (num_deck : int)
@@ -251,7 +250,41 @@ let state_resetall_test (name : string) (st0 : State.s) : test =
   let nplayers = List.length plist in
   assert_equal ncards ((2 * nplayers) + 1)
 
-<<<<<<< HEAD
+let redeem_for_natural_test
+    (name : string)
+    (b : bool)
+    (p : Player.player)
+    (expected_output : int * int) : test =
+  name >:: fun _ ->
+  assert_equal
+    ( current_bet (redeem_for_natural b p),
+      current_total (redeem_for_natural b p) )
+    expected_output
+
+let get_bet_tup (st : State.s) =
+  ( st |> players_of |> List.map current_bet,
+    st |> players_of |> List.map current_total )
+
+let state_increasebet_test
+    (name : string)
+    (amount : int)
+    (pname : string)
+    (st : State.s)
+    (expected_output : int list * int list) : test =
+  name >:: fun _ ->
+  assert_equal expected_output
+    (increase_bet amount pname st |> get_bet_tup)
+
+let state_redeembet_test
+    (name : string)
+    (operator : int -> int -> int)
+    (pname : string)
+    (st : State.s)
+    (expected_output : int list * int list) : test =
+  name >:: fun _ ->
+  assert_equal expected_output
+    (redeem_bet operator pname st |> get_bet_tup)
+
 (** [current_bet_test name p expected_output] constructs an OUnit test
     named [name] that asserts the current_bet of the player [p] is the
     same as [expected_output]*)
@@ -278,8 +311,6 @@ let natural_test (name : string) f (p : player) (expected_output : bool)
     : test =
   name >:: fun _ -> assert_equal expected_output (f p)
 
-=======
->>>>>>> b727229db5019e57ff259e5f2d628309c26c8067
 (** [print_players p_list] prints the name and hand of each player in
     [p_list] to check if state functions are working. *)
 let rec print_players p_list =
@@ -316,6 +347,16 @@ let p1 =
   p0
   |> add_card ("Five of Hearts", 5)
   |> add_card ("Queen of Spades", 10)
+
+let p2 =
+  p0
+  |> add_card ("Ace of Hearts", 1)
+  |> add_card ("Ten of Spades", 10)
+  |> add_bet 50
+
+let p3 = p1 |> add_bet 50
+let p4 = p3 |> redeem ( + ) |> add_bet 50
+let p5 = p2 |> redeem ( + ) |> add_bet 50
 
 let p1betredeem =
   p1 |> add_bet 10 |> redeem ( + ) |> add_bet 20 |> redeem ( - )
@@ -393,6 +434,14 @@ let player_tests =
         false,
         5,
         -10 );
+    redeem_for_natural_test "Player with natural and inital total 0"
+      true p2 (0, 75);
+    redeem_for_natural_test "Player with no natural and intial total 0"
+      false p3 (0, 0);
+    redeem_for_natural_test "Player with natural and intial total 50"
+      true p4 (0, 125);
+    redeem_for_natural_test "Player with no natural and intial total 50"
+      false p5 (0, 50);
   ]
 
 let command_tests =
@@ -495,6 +544,15 @@ let state_tests =
     state_completedealer_test "test dealer completes hand" 2 st2;
     state_resetall_test "test hand of cards is reset for all players"
       st3;
+    state_increasebet_test "test increasing bet by 3 for one player" 3
+      "Alice" st0
+      ([ 0; 3; 0 ], [ 1; 2; 3 ]);
+    state_redeembet_test "test addition to one player's total" ( + )
+      "Henry" st1
+      ([ 0; 0; 0 ], [ 1; 2; 8 ]);
+    state_redeembet_test "test subtraction from one player's total"
+      ( - ) "Henry" st1
+      ([ 0; 0; 0 ], [ 1; 2; -2 ]);
   ]
 
 let suite =

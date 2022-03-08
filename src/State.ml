@@ -91,23 +91,6 @@ let redeem_bet operator pname st =
   let updated_player_list = redeem_for operator pname st.players [] in
   { st with players = updated_player_list }
 
-let unnatural_dealer_natural_player st =
-  let natural_list = List.map is_natural (players_of st) in
-  let updated_player_list =
-    List.map2 redeem_for_natural natural_list (players_of st)
-  in
-  { st with players = updated_player_list }
-
-let natural_dealer_unnatural_player st =
-  let updated_player_list =
-    List.map
-      (fun p ->
-        if is_natural p then redeem_for_natural false p
-        else redeem ( - ) p)
-      (players_of st)
-  in
-  { st with players = updated_player_list }
-
 let rec adding_cards p d =
   if hand_value p < 17 then adding_cards (add_card (peek d) p) (pop d)
   else (p, d)
