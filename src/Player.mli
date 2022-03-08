@@ -91,7 +91,16 @@ val redeem_for_natural : bool -> player -> player
     zero. Requires: [p] is a valid player. *)
 
 val is_dealer_natural : player -> bool
-(** [is_dealer_natural d] is whether or not the [d]] has a natural (i.e.
+(** [is_dealer_natural d] is whether or not the [d] has a natural (i.e.
     the the face-up card and hidden card makes a pair of ace and
     ten-card). Requires: [d] is a valid dealer who only has one face-up
     card and one hidden card. *)
+
+val has_ace : player -> bool
+(** [has_ace p] is whether or not [p] is currently holding an ace card.
+    Requires: [p] is a valid player. *)
+
+val ace_to_eleven : player -> player
+(** [ace_to_eleven p] is the player when the value of every ace card in
+    the hand of [p] is changed to eleven. Requires: [p] is a valid
+    player. *)
