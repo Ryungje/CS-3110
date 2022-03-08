@@ -43,3 +43,24 @@ let add_bet amount p = { p with bet = p.bet + amount }
 
 let redeem operator p =
   { p with bet = 0; total = operator p.total p.bet }
+
+let is_natural p =
+  if List.filter (fun str -> String.sub str 0 3 = "Ace") p.hand = []
+  then false
+  else if
+    List.filter
+      (fun str ->
+        String.sub str 0 3 = "Ten"
+        || String.sub str 0 4 = "Jack"
+        || String.sub str 0 5 = "Queen"
+        || String.sub str 0 4 = "King")
+      p.hand
+    |> List.length <> 1
+  then false
+  else true
+
+let redeem_for_natural b p =
+  if b then { p with bet = 0; total = p.total + p.bet + (p.bet / 2) }
+  else { p with bet = 0 }
+
+let is_dealer_natural p = p.value + snd p.hidden_card = 11
