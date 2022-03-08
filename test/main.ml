@@ -251,6 +251,35 @@ let state_resetall_test (name : string) (st0 : State.s) : test =
   let nplayers = List.length plist in
   assert_equal ncards ((2 * nplayers) + 1)
 
+<<<<<<< HEAD
+(** [current_bet_test name p expected_output] constructs an OUnit test
+    named [name] that asserts the current_bet of the player [p] is the
+    same as [expected_output]*)
+let current_bet_test
+    (name : string)
+    (p : player)
+    (expected_output : int) : test =
+  name >:: fun _ -> assert_equal expected_output (current_bet p)
+
+(** [current_total_test name p expected_output] constructs an OUnit test
+    named [name] that asserts the current_total of the player [p] is the
+    same as [expected_output]*)
+let current_total_test
+    (name : string)
+    (p : player)
+    (expected_output : int) : test =
+  name >:: fun _ -> assert_equal expected_output (current_total p)
+
+(** [is_natural_test name p expected_output] constructs an OUnit test
+    named [name] that asserts the hand of the player [p] is the a
+    natural using the is_natural and compares output to
+    [expected_output]*)
+let natural_test (name : string) f (p : player) (expected_output : bool)
+    : test =
+  name >:: fun _ -> assert_equal expected_output (f p)
+
+=======
+>>>>>>> b727229db5019e57ff259e5f2d628309c26c8067
 (** [print_players p_list] prints the name and hand of each player in
     [p_list] to check if state functions are working. *)
 let rec print_players p_list =
@@ -291,6 +320,12 @@ let p1 =
 let p1betredeem =
   p1 |> add_bet 10 |> redeem ( + ) |> add_bet 20 |> redeem ( - )
   |> add_bet 5
+
+let p2 =
+  p0 |> add_card ("Ace of Spades", 5) |> add_card ("Queen of Hearts", 5)
+
+let p3 =
+  p0 |> add_card ("Four of Spades", 5) |> add_card ("Ten of Clubs", 5)
 
 let p_none = reset_hand p1
 
@@ -468,3 +503,11 @@ let suite =
          [ cards_tests; player_tests; command_tests; state_tests ]
 
 let _ = run_test_tt_main suite
+
+let natural_tests =
+  [
+    natural_test "p2 has natural hand" is_natural p2 true;
+    natural_test "p3 does not have natural hand" is_natural p3 false;
+    natural_test "d_with_hidden does not have natural hand"
+      is_dealer_natural d_with_hidden false;
+  ]
