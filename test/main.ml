@@ -196,6 +196,7 @@ let init_state_exception_test
     dealers hands of [st] is equal to the number of cards taken from the
     deck (num_deck*52 - length_of_deck). Requires: [st] is a valid game
     state and the dealer currently had a hidden card. *)
+
 let state_hiddencard_test
     (name : string)
     (num_deck : int)
@@ -382,15 +383,19 @@ let p1betredeem =
   p1 |> add_bet 10 |> redeem ( + ) |> add_bet 20 |> redeem ( - )
   |> add_bet 5
 
+(* natural *)
 let p2 =
   p0 |> add_card ("Ace of Spades", 5) |> add_card ("Queen of Hearts", 5)
 
+(* unnatural *)
 let p3 =
   p0 |> add_card ("Four of Spades", 5) |> add_card ("Ten of Clubs", 5)
 
 let p_none = reset_hand p1
 
-(* Sample dealer *)
+(* Sample dealers *)
+
+(* this one has unnatural hand *)
 let d_with_hidden =
   init_stats "Dealer"
   |> add_card ("Three of Clubs", 3)
@@ -398,6 +403,14 @@ let d_with_hidden =
 
 let d_revealed = reveal d_with_hidden
 let d_busted = d_revealed |> add_card ("Queen of Hearts", 10)
+
+(* this one has natural hand *)
+let d_hidden_natural =
+  init_stats "Dealer"
+  |> add_card ("Ace of Spade", 5)
+  |> add_hidden ("Ten of Clubs", 5)
+
+let d_revealed_natural = reveal d_hidden_natural
 
 let _ =
   print_cards (shuffle card_deck) (List.length (cards_of card_deck))
@@ -525,6 +538,9 @@ let command_tests =
     parse_command_exception_test "Parse quit" "quit" Escape;
   ]
 
+(* Sample states *)
+
+(* A game with no naturals *)
 let st0 = init_state 2 3 [ "Bob"; "Alice"; "Henry" ] [ 1; 2; 3 ]
 let _ = print_endline "Initial state"
 let _ = print_players (list_of_players st0)
@@ -549,7 +565,10 @@ let _ = print_dealer (st3 |> dealer_of |> show_hand)
 
 let _ =
   List.map current_total (players_of st3)
-  |> List.map string_of_int |> String.concat ", " |> print_endline
+  |> List.map string_of_int |> String.concat ", "
+  |> print_endline (* A game where only dealer has natural *)
+
+let st4 = 1
 
 let state_tests =
   [
@@ -564,25 +583,21 @@ let state_tests =
     state_completedealer_test "test dealer completes hand" 2 st2;
     state_resetall_test "test hand of cards is reset for all players"
       st3;
-    state_increasebet_test "test increasing bet by 3 for one player" 3
-      "Alice" st0
-      ([ 0; 3; 0 ], [ 1; 2; 3 ]);
-    state_redeembet_test "test addition to one player's total" ( + )
-      "Henry" st1
-      ([ 0; 0; 0 ], [ 1; 2; 8 ]);
-    state_redeembet_test "test subtraction from one player's total"
-      ( - ) "Henry" st1
-      ([ 0; 0; 0 ], [ 1; 2; -2 ]);
   ]
 
 let natural_tests =
   [
+<<<<<<< HEAD
     natural_test "p2 has natural hand w/ Queen" is_natural p2 true;
     natural_test "p4 has a natural hand w/ Ten" is_natural p4 true;
     natural_test "pnatural_jack has a natural hand w/ Jack" is_natural
       pnatural_jack true;
     natural_test "pnatural_king has a natural hand w/ King" is_natural
       pnatural_king true;
+=======
+    natural_test "P1 does not have natural hand" is_natural p1 false;
+    natural_test "p2 has natural hand" is_natural p2 true;
+>>>>>>> ce37824b62b1febe2dcc1815f03fd5ea826a715b
     natural_test "p3 does not have natural hand" is_natural p3 false;
     natural_test "d_with_hidden does not have natural hand"
       is_dealer_natural d_with_hidden false;
