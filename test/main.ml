@@ -261,6 +261,12 @@ let redeem_for_natural_test
       current_total (redeem_for_natural b p) )
     expected_output
 
+let has_ace_test
+    (name : string)
+    (p : Player.player)
+    (expected_output : bool) : test =
+  name >:: fun _ -> assert_equal (has_ace p) expected_output
+
 let get_bet_tup (st : State.s) =
   ( st |> players_of |> List.map current_bet,
     st |> players_of |> List.map current_total )
@@ -353,6 +359,14 @@ let p4 =
   |> add_card ("Ace of Hearts", 1)
   |> add_card ("Ten of Spades", 10)
   |> add_bet 50
+
+let player_only_ace = p0 |> add_card ("Ace of Hearts", 1)
+
+let player_all_aces =
+  player_only_ace
+  |> add_card ("Ace of Spades", 1)
+  |> add_card ("Ace of Clubs", 1)
+  |> add_card ("Ace of Diamonds", 1)
 
 let p5 = p1 |> add_bet 50
 let p6 = p5 |> redeem ( + ) |> add_bet 50
@@ -568,4 +582,23 @@ let natural_tests =
     natural_test "p3 does not have natural hand" is_natural p3 false;
     natural_test "d_with_hidden does not have natural hand"
       is_dealer_natural d_with_hidden false;
+  ]
+
+let ace_tests =
+  [
+    has_ace_test "Player with only an ace" player_only_ace true;
+    has_ace_test "Player with no cards" p0 false;
+    has_ace_test "Player with ace and mutltiple cards" p4 true;
+    has_ace_test "Played with no ace and multiple cards" p1 false;
+    has_ace_test "Player with multiple aces" player_all_aces true;
+    player_test "Player with only an ace"
+      (ace_to_eleven player_only_ace)
+      ("Bob Carlos", [ "Ace of Hearts" ], 11, false, 0, 0);
+    player_test "Player with no aces" (ace_to_eleven p1)
+      ( "Bob Carlos",
+        [ "Five of Hearts"; "Queen of Spades" ],
+        15,
+        false,
+        0,
+        0 );
   ]
