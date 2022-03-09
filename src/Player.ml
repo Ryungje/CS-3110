@@ -26,8 +26,11 @@ let init_stats str =
 let name_of p = p.name
 
 let add_card c p =
-  match c with
-  | n, v -> { p with hand = p.hand @ [ n ]; value = p.value + v }
+  if p.ace_is_eleven && String.sub (fst c) 0 3 = "Ace" then
+    { p with hand = p.hand @ [ fst c ]; value = p.value + snd c + 10 }
+  else
+    match c with
+    | n, v -> { p with hand = p.hand @ [ n ]; value = p.value + v }
 
 let show_hand p = p.hand
 let hand_value p = p.value
