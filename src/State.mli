@@ -68,6 +68,11 @@ val natural_dealer_unnatural_player : s -> s
     zero and players without a natural must pay their bet to the dealer.
     Requires: dealer in [st] has a natural. *)
 
+val change_ace : string -> s -> s
+(** [change_ace pname st] is the state of the game [st] when player with
+    [pname] changes the value of their ace cards from one to eleven.
+    Requires: [pname] must the name of a player in [st]. *)
+
 val complete_hand : s -> s
 (** [complete_hand st] is the state of the game [st] after the dealer
     completes his hand (i.e. the dealer keeps taking cards until the

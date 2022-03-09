@@ -70,12 +70,15 @@ let rec get_player_command st plist n =
   if n < List.length plist then (
     let p = List.nth (players_of st) n in
     print_endline
-      (name_of p ^ "'s hand: " ^ String.concat ", " (show_hand p));
+      ("Completing " ^ name_of p ^ "'s hand: "
+      ^ String.concat ", " (show_hand p));
     print_endline ("Current bet: " ^ string_of_int (current_bet p));
     print_endline
       ("Remaining chips: "
       ^ string_of_int (current_total p - current_bet p));
-    print_endline "Choices: hit, stand, bet";
+    let choice_str = "Choices: hit, stand, bet" in
+    if has_ace p then print_endline (choice_str ^ ", ace to eleven")
+    else print_endline choice_str;
     print_string "> ";
     match parse_command (read_line ()) with
     | exception End_of_file -> st
@@ -97,6 +100,9 @@ let rec get_player_command st plist n =
         else get_player_command new_st (players_of new_st) n
     | Bet i ->
         let new_st = increase_bet i (name_of p) st in
+        get_player_command new_st plist n
+    | AceToEleven ->
+        let new_st = change_ace (name_of p) st in
         get_player_command new_st plist n
     | exception _ ->
         print_endline "Invalid command! Try again.";
@@ -129,7 +135,9 @@ let rec print_player_starting_cards st plist n =
     let p = List.nth (players_of st) n in
     print_endline
       (name_of p ^ "'s hand: " ^ String.concat ", " (show_hand p));
-    if is_natural p then print_endline (name_of p ^ " has a natural!")
+    if is_natural p then
+      let _ = print_endline (name_of p ^ " has a natural!") in
+      print_player_starting_cards st plist (n + 1)
     else print_player_starting_cards st plist (n + 1))
   else ()
 
@@ -157,12 +165,16 @@ let rec play_game num_rounds st =
     print_endline ("\nRound " ^ string_of_int num_rounds ^ ":");
     let bet_st = get_player_bets st 0 in
     print_endline "\nShuffling cards... Dealing to players... ";
-    print_endline
-      ("Dealer's hand: "
-      ^ String.concat ", " (bet_st |> dealer_of |> show_hand));
-    if is_dealer_natural (bet_st |> dealer_of) then
-      print_endline "Dealer has a natural"
-    else ();
+    if is_dealer_natural (bet_st |> dealer_of) then (
+      print_endline
+        ("Dealer's hand: "
+        ^ String.concat ", " (bet_st |> dealer_of |> reveal |> show_hand)
+        );
+      print_endline "Dealer has a natural!")
+    else
+      print_endline
+        ("Dealer's hand: "
+        ^ String.concat ", " (bet_st |> dealer_of |> show_hand));
     print_player_starting_cards bet_st (players_of bet_st) 0;
     print_newline ();
     if

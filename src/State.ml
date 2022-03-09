@@ -108,6 +108,14 @@ let natural_dealer_unnatural_player st =
   in
   { st with players = updated_player_list }
 
+let change_ace pname st =
+  let updated_player_llist =
+    List.map
+      (fun p -> if name_of p = pname then ace_to_eleven p else p)
+      st.players
+  in
+  { st with players = updated_player_llist }
+
 let rec adding_cards p d =
   if hand_value p < 17 then adding_cards (add_card (peek d) p) (pop d)
   else (p, d)
