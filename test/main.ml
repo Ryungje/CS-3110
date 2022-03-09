@@ -372,6 +372,12 @@ let p5 = p1 |> add_bet 50
 let p6 = p5 |> redeem ( + ) |> add_bet 50
 let p7 = p4 |> redeem ( + ) |> add_bet 50
 
+let pnatural_jack =
+  p0 |> add_card ("Jack of Hearts", 10) |> add_card ("Ace of Spades", 1)
+
+let pnatural_king =
+  p0 |> add_card ("King of Clubs", 10) |> add_card ("Ace of Clubs", 1)
+
 let p1betredeem =
   p1 |> add_bet 10 |> redeem ( + ) |> add_bet 20 |> redeem ( - )
   |> add_bet 5
@@ -569,16 +575,14 @@ let state_tests =
       ([ 0; 0; 0 ], [ 1; 2; -2 ]);
   ]
 
-let suite =
-  "test suite for BlackJack"
-  >::: List.flatten
-         [ cards_tests; player_tests; command_tests; state_tests ]
-
-let _ = run_test_tt_main suite
-
 let natural_tests =
   [
-    natural_test "p2 has natural hand" is_natural p2 true;
+    natural_test "p2 has natural hand w/ Queen" is_natural p2 true;
+    natural_test "p4 has a natural hand w/ Ten" is_natural p4 true;
+    natural_test "pnatural_jack has a natural hand w/ Jack" is_natural
+      pnatural_jack true;
+    natural_test "pnatural_king has a natural hand w/ King" is_natural
+      pnatural_king true;
     natural_test "p3 does not have natural hand" is_natural p3 false;
     natural_test "d_with_hidden does not have natural hand"
       is_dealer_natural d_with_hidden false;
@@ -602,3 +606,17 @@ let ace_tests =
         0,
         0 );
   ]
+
+let suite =
+  "test suite for BlackJack"
+  >::: List.flatten
+         [
+           cards_tests;
+           player_tests;
+           command_tests;
+           state_tests;
+           ace_tests;
+           natural_tests;
+         ]
+
+let _ = run_test_tt_main suite
