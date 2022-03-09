@@ -303,9 +303,11 @@ let p1betredeem =
   p1 |> add_bet 10 |> redeem ( + ) |> add_bet 20 |> redeem ( - )
   |> add_bet 5
 
+(* natural *)
 let p2 =
   p0 |> add_card ("Ace of Spades", 5) |> add_card ("Queen of Hearts", 5)
 
+(* unnatural *)
 let p3 =
   p0 |> add_card ("Four of Spades", 5) |> add_card ("Ten of Clubs", 5)
 
@@ -448,6 +450,9 @@ let command_tests =
     parse_command_exception_test "Parse quit" "quit" Escape;
   ]
 
+(* Sample states *)
+
+(* A game with no naturals *)
 let st0 = init_state 2 3 [ "Bob"; "Alice"; "Henry" ] [ 1; 2; 3 ]
 let _ = print_endline "Initial state"
 let _ = print_players (list_of_players st0)
@@ -472,7 +477,10 @@ let _ = print_dealer (st3 |> dealer_of |> show_hand)
 
 let _ =
   List.map current_total (players_of st3)
-  |> List.map string_of_int |> String.concat ", " |> print_endline
+  |> List.map string_of_int |> String.concat ", "
+  |> print_endline (* A game where only dealer has natural *)
+
+let st4 = 1
 
 let state_tests =
   [
@@ -498,6 +506,7 @@ let _ = run_test_tt_main suite
 
 let natural_tests =
   [
+    natural_test "P1 does not have natural hand" is_natural p1 false;
     natural_test "p2 has natural hand" is_natural p2 true;
     natural_test "p3 does not have natural hand" is_natural p3 false;
     natural_test "d_with_hidden does not have natural hand"
