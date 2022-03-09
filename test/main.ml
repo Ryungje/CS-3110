@@ -565,8 +565,8 @@ let _ = print_dealer (st3 |> dealer_of |> show_hand)
 
 let _ =
   List.map current_total (players_of st3)
-  |> List.map string_of_int |> String.concat ", "
-  |> print_endline (* A game where only dealer has natural *)
+  |> List.map string_of_int |> String.concat ", " |> print_endline
+(* A game where only dealer has natural *)
 
 let st4 = 1
 
@@ -587,17 +587,12 @@ let state_tests =
 
 let natural_tests =
   [
-<<<<<<< HEAD
     natural_test "p2 has natural hand w/ Queen" is_natural p2 true;
     natural_test "p4 has a natural hand w/ Ten" is_natural p4 true;
     natural_test "pnatural_jack has a natural hand w/ Jack" is_natural
       pnatural_jack true;
     natural_test "pnatural_king has a natural hand w/ King" is_natural
       pnatural_king true;
-=======
-    natural_test "P1 does not have natural hand" is_natural p1 false;
-    natural_test "p2 has natural hand" is_natural p2 true;
->>>>>>> ce37824b62b1febe2dcc1815f03fd5ea826a715b
     natural_test "p3 does not have natural hand" is_natural p3 false;
     natural_test "d_with_hidden does not have natural hand"
       is_dealer_natural d_with_hidden false;

@@ -7,6 +7,7 @@ type player = {
   bet : int;
   total : int;
   hidden_card : string * int;
+  ace_is_eleven : bool;
 }
 
 let init_stats str =
@@ -19,6 +20,7 @@ let init_stats str =
       bet = 0;
       total = 0;
       hidden_card = ("", 0);
+      ace_is_eleven = false;
     }
 
 let name_of p = p.name
@@ -32,7 +34,10 @@ let hand_value p = p.value
 let current_bet p = p.bet
 let current_total p = p.total
 let is_bust p = p.value > 21
-let reset_hand p = { p with hand = []; value = 0; bet = 0 }
+
+let reset_hand p =
+  { p with hand = []; value = 0; bet = 0; ace_is_eleven = false }
+
 let add_hidden c p = { p with hidden_card = c }
 
 let reveal p =
@@ -71,9 +76,12 @@ let has_ace p =
   List.filter (fun str -> String.sub str 0 3 = "Ace") p.hand <> []
 
 let ace_to_eleven p =
-  let sum =
-    List.fold_left
-      (fun acc c -> if String.sub c 0 3 = "Ace" then acc + 10 else acc)
-      0 p.hand
-  in
-  { p with value = p.value + sum }
+  if p.ace_is_eleven then p
+  else
+    let sum =
+      List.fold_left
+        (fun acc c ->
+          if String.sub c 0 3 = "Ace" then acc + 10 else acc)
+        0 p.hand
+    in
+    { p with value = p.value + sum; ace_is_eleven = true }
