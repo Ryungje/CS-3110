@@ -251,8 +251,64 @@ let state_resetall_test (name : string) (st0 : State.s) : test =
   let nplayers = List.length plist in
   assert_equal ncards ((2 * nplayers) + 1)
 
-let state_naturals_test (name : string) (st0 : State.s) : test =
-  name >:: fun _ -> assert_equal 1 1
+let redeem_for_natural_test
+    (name : string)
+    (b : bool)
+    (p : Player.player)
+    (expected_output : int * int) : test =
+  name >:: fun _ ->
+  assert_equal
+    ( current_bet (redeem_for_natural b p),
+      current_total (redeem_for_natural b p) )
+    expected_output
+
+let has_ace_test
+    (name : string)
+    (p : Player.player)
+    (expected_output : bool) : test =
+  name >:: fun _ -> assert_equal (has_ace p) expected_output
+
+let get_bet_tup (st : State.s) =
+  ( st |> players_of |> List.map current_bet,
+    st |> players_of |> List.map current_total )
+
+let state_increasebet_test
+    (name : string)
+    (amount : int)
+    (pname : string)
+    (st : State.s)
+    (expected_output : int list * int list) : test =
+  name >:: fun _ ->
+  assert_equal expected_output
+    (increase_bet amount pname st |> get_bet_tup)
+
+let state_redeembet_test
+    (name : string)
+    (operator : int -> int -> int)
+    (pname : string)
+    (st : State.s)
+    (expected_output : int list * int list) : test =
+  name >:: fun _ ->
+  assert_equal expected_output
+    (redeem_bet operator pname st |> get_bet_tup)
+
+(** [current_bet_test name p expected_output] constructs an OUnit test
+    named [name] that asserts the current_bet of the player [p] is the
+    same as [expected_output]*)
+let current_bet_test
+    (name : string)
+    (p : player)
+    (expected_output : int) : test =
+  name >:: fun _ -> assert_equal expected_output (current_bet p)
+
+(** [current_total_test name p expected_output] constructs an OUnit test
+    named [name] that asserts the current_total of the player [p] is the
+    same as [expected_output]*)
+let current_total_test
+    (name : string)
+    (p : player)
+    (expected_output : int) : test =
+  name >:: fun _ -> assert_equal expected_output (current_total p)
 
 (** [is_natural_test name p expected_output] constructs an OUnit test
     named [name] that asserts the hand of the player [p] is the a
@@ -298,6 +354,24 @@ let p1 =
   p0
   |> add_card ("Five of Hearts", 5)
   |> add_card ("Queen of Spades", 10)
+
+let p4 =
+  p0
+  |> add_card ("Ace of Hearts", 1)
+  |> add_card ("Ten of Spades", 10)
+  |> add_bet 50
+
+let player_only_ace = p0 |> add_card ("Ace of Hearts", 1)
+
+let player_all_aces =
+  player_only_ace
+  |> add_card ("Ace of Spades", 1)
+  |> add_card ("Ace of Clubs", 1)
+  |> add_card ("Ace of Diamonds", 1)
+
+let p5 = p1 |> add_bet 50
+let p6 = p5 |> redeem ( + ) |> add_bet 50
+let p7 = p4 |> redeem ( + ) |> add_bet 50
 
 let p1betredeem =
   p1 |> add_bet 10 |> redeem ( + ) |> add_bet 20 |> redeem ( - )
@@ -387,6 +461,14 @@ let player_tests =
         false,
         5,
         -10 );
+    redeem_for_natural_test "Player with natural and inital total 0"
+      true p4 (0, 75);
+    redeem_for_natural_test "Player with no natural and intial total 0"
+      false p5 (0, 0);
+    redeem_for_natural_test "Player with no natural and intial total 50"
+      false p6 (0, 50);
+    redeem_for_natural_test "Player with  natural and intial total 50"
+      true p7 (0, 125);
   ]
 
 let command_tests =
@@ -511,4 +593,23 @@ let natural_tests =
     natural_test "p3 does not have natural hand" is_natural p3 false;
     natural_test "d_with_hidden does not have natural hand"
       is_dealer_natural d_with_hidden false;
+  ]
+
+let ace_tests =
+  [
+    has_ace_test "Player with only an ace" player_only_ace true;
+    has_ace_test "Player with no cards" p0 false;
+    has_ace_test "Player with ace and mutltiple cards" p4 true;
+    has_ace_test "Played with no ace and multiple cards" p1 false;
+    has_ace_test "Player with multiple aces" player_all_aces true;
+    player_test "Player with only an ace"
+      (ace_to_eleven player_only_ace)
+      ("Bob Carlos", [ "Ace of Hearts" ], 11, false, 0, 0);
+    player_test "Player with no aces" (ace_to_eleven p1)
+      ( "Bob Carlos",
+        [ "Five of Hearts"; "Queen of Spades" ],
+        15,
+        false,
+        0,
+        0 );
   ]
