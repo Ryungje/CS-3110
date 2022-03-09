@@ -5,6 +5,7 @@ type command =
   | Hit
   | Stand
   | Bet of int
+  | AceToEleven
   | Play
 
 exception Escape
@@ -55,6 +56,7 @@ val parse_command : string -> command
     - [parse_command "   hit  "] is [Hit]
     - [parse_command "stand"] is [Stand]
     - [parse_command "bet 8"] is [Bet 8]
+    - [parse_command "    ace    to   eleven"] is [AceToEleven]
     - [parse_command "play"] is [Play]
 
     Requires: [str] contains only alphanumeric (A-Z, a-z, 0-9) and space
@@ -66,6 +68,7 @@ val parse_command : string -> command
     Raises [Malformed] is command is malformed. A command is malformed
     if the verb is not "hit","stand", "bet" or "play", or if "bet" is
     not followed by a single integer greater than 0, or if the verb (not
-    including "bet") is followed by more words.
+    including "bet") is followed by more words, or if the phrase "ace to
+    eleven" contains extra characters that are not spaces.
 
     Raises: [Escape] if the verb is "quit". *)

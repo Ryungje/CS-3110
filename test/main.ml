@@ -532,6 +532,8 @@ let command_tests =
     parse_command_test "Parse hit command" "  hit " Hit;
     parse_command_test "Parse stand command" "stand " Stand;
     parse_command_test "Parse bet 9 command" " bet  9 " (Bet 9);
+    parse_command_test "Parse ace to eleven" "ace  to   eleven  "
+      AceToEleven;
     parse_command_test "Parse play command" "  play" Play;
     parse_command_exception_test "Parse empty command" "" Empty;
     parse_command_exception_test "Parse space only command" "    " Empty;
@@ -553,6 +555,12 @@ let command_tests =
     parse_command_exception_test
       "Parse invalid bet command with a non-numeric input" "bet a pony"
       Malformed;
+    parse_command_exception_test "Parse ace To Eleven" "ace To Eleven"
+      Malformed;
+    parse_command_exception_test "Parse ace one to eleven"
+      "ace one to eleven" Malformed;
+    parse_command_exception_test "Parse ace, to, eleven."
+      "ace, to, eleven," Malformed;
     parse_command_exception_test "Parse invalid command for quit"
       "quit game now" Malformed;
     parse_command_exception_test
