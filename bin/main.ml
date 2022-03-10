@@ -76,7 +76,7 @@ let rec get_player_command st plist n =
     print_endline
       ("Remaining chips: "
       ^ string_of_int (current_total p - current_bet p));
-    let choice_str = "Choices: hit, stand, bet" in
+    let choice_str = "Choices: hit, stand" in
     if has_ace p then print_endline (choice_str ^ ", ace to eleven")
     else print_endline choice_str;
     print_string "> ";
@@ -98,9 +98,6 @@ let rec get_player_command st plist n =
           in
           get_player_command new_st plist (n + 1)
         else get_player_command new_st (players_of new_st) n
-    | Bet i ->
-        let new_st = increase_bet i (name_of p) st in
-        get_player_command new_st plist n
     | AceToEleven ->
         let new_st = change_ace (name_of p) st in
         get_player_command new_st plist n
