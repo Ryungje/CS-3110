@@ -117,7 +117,11 @@ let change_ace pname st =
   { st with players = updated_player_llist }
 
 let rec adding_cards p d =
-  if hand_value p < 17 then adding_cards (add_card (peek d) p) (pop d)
+  let dealer_eleven = p |> ace_to_eleven in
+  if hand_value dealer_eleven > 17 && hand_value dealer_eleven <= 21
+  then (dealer_eleven, d)
+  else if hand_value p < 17 then
+    adding_cards (add_card (peek d) p) (pop d)
   else (p, d)
 
 let complete_hand st =
