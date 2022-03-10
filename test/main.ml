@@ -475,30 +475,6 @@ let player_tests =
       false p6 (0, 50);
     redeem_for_natural_test "Player with  natural and intial total 50"
       true p7 (0, 125);
-    natural_test "p2 has natural hand w/ Queen" is_natural p2 true;
-    natural_test "p4 has a natural hand w/ Ten" is_natural p4 true;
-    natural_test "pnatural_jack has a natural hand w/ Jack" is_natural
-      pnatural_jack true;
-    natural_test "pnatural_king has a natural hand w/ King" is_natural
-      pnatural_king true;
-    natural_test "p3 does not have natural hand" is_natural p3 false;
-    natural_test "d_with_hidden does not have natural hand"
-      is_dealer_natural d_with_hidden false;
-    has_ace_test "Player with only an ace" player_only_ace true;
-    has_ace_test "Player with no cards" p0 false;
-    has_ace_test "Player with ace and mutltiple cards" p4 true;
-    has_ace_test "Played with no ace and multiple cards" p1 false;
-    has_ace_test "Player with multiple aces" player_all_aces true;
-    player_test "Player with only an ace"
-      (ace_to_eleven player_only_ace)
-      ("Bob Carlos", [ "Ace of Hearts" ], 11, false, 0, 0);
-    player_test "Player with no aces" (ace_to_eleven p1)
-      ( "Bob Carlos",
-        [ "Five of Hearts"; "Queen of Spades" ],
-        15,
-        false,
-        0,
-        0 );
   ]
 
 let command_tests =
@@ -554,12 +530,6 @@ let command_tests =
     parse_command_exception_test
       "Parse invalid bet command with a non-numeric input" "bet a pony"
       Malformed;
-    parse_command_exception_test "Parse ace To Eleven" "ace To Eleven"
-      Malformed;
-    parse_command_exception_test "Parse ace one to eleven"
-      "ace one to eleven" Malformed;
-    parse_command_exception_test "Parse ace, to, eleven."
-      "ace, to, eleven," Malformed;
     parse_command_exception_test "Parse invalid command for quit"
       "quit game now" Malformed;
     parse_command_exception_test
@@ -616,9 +586,89 @@ let state_tests =
       st3;
   ]
 
+let natural_tests =
+  [
+    natural_test "p2 has natural hand w/ Queen" is_natural p2 true;
+    natural_test "p4 has a natural hand w/ Ten" is_natural p4 true;
+    natural_test "pnatural_jack has a natural hand w/ Jack" is_natural
+      pnatural_jack true;
+    natural_test "pnatural_king has a natural hand w/ King" is_natural
+      pnatural_king true;
+    natural_test "P1 does not have natural hand" is_natural p1 false;
+    natural_test "p2 has natural hand" is_natural p2 true;
+    natural_test "p3 does not have natural hand" is_natural p3 false;
+    natural_test "d_with_hidden does not have natural hand"
+      is_dealer_natural d_with_hidden false;
+  ]
+
+let ace_tests =
+  [
+    has_ace_test "Player with only an ace" player_only_ace true;
+    has_ace_test "Player with no cards" p0 false;
+    has_ace_test "Player with ace and mutltiple cards" p4 true;
+    has_ace_test "Played with no ace and multiple cards" p1 false;
+    has_ace_test "Player with multiple aces" player_all_aces true;
+    player_test "Player with only an ace"
+      (ace_to_eleven player_only_ace)
+      ("Bob Carlos", [ "Ace of Hearts" ], 11, false, 0, 0);
+    player_test "Player with no aces" (ace_to_eleven p1)
+      ( "Bob Carlos",
+        [ "Five of Hearts"; "Queen of Spades" ],
+        15,
+        false,
+        0,
+        0 );
+    player_test "Testing ace_to_eleven: Player with only an ace"
+      (player_only_ace |> ace_to_eleven)
+      ("Bob Carlos", [ "Ace of Hearts" ], 11, false, 0, 0);
+    player_test
+      "Testing ace_to_eleven: Player starts with an ace, applies at11 \
+       and then another ace is added"
+      (player_only_ace |> ace_to_eleven |> add_card ("Ace of Spades", 1))
+      ( "Bob Carlos",
+        [ "Ace of Hearts"; "Ace of Spades" ],
+        22,
+        true,
+        0,
+        0 );
+    player_test "Testing ace_to_eleven: Player with natural hand"
+      (p4 |> ace_to_eleven)
+      ( "Bob Carlos",
+        [ "Ace of Hearts"; "Ten of Spades" ],
+        21,
+        false,
+        50,
+        0 );
+    player_test
+      "Testing ace_to_eleven: Player with only ace, applied multiple \
+       times"
+      (player_only_ace |> ace_to_eleven |> ace_to_eleven)
+      ("Bob Carlos", [ "Ace of Hearts" ], 11, false, 0, 0);
+    player_test "Testing ace_to_eleven: Player has all aces"
+      (player_all_aces |> ace_to_eleven)
+      ( "Bob Carlos",
+        [
+          "Ace of Hearts";
+          "Ace of Spades";
+          "Ace of Clubs";
+          "Ace of Diamonds";
+        ],
+        44,
+        true,
+        0,
+        0 );
+  ]
+
 let suite =
   "test suite for BlackJack"
   >::: List.flatten
-         [ cards_tests; player_tests; command_tests; state_tests ]
+         [
+           cards_tests;
+           player_tests;
+           command_tests;
+           state_tests;
+           ace_tests;
+           natural_tests;
+         ]
 
 let _ = run_test_tt_main suite

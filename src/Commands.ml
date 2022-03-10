@@ -1,7 +1,6 @@
 type command =
   | Hit
   | Stand
-  | Bet of int
   | AceToEleven
   | Play
 
@@ -44,10 +43,6 @@ let parse_command str =
     match List.hd word_list with
     | "hit" when len = 1 -> Hit
     | "stand" when len = 1 -> Stand
-    | "bet" -> (
-        match parse_number (String.concat " " (List.tl word_list)) with
-        | exception _ -> raise Malformed
-        | i -> Bet i)
     | "ace" when String.concat " " word_list = "ace to eleven" ->
         AceToEleven
     | "play" when len = 1 -> Play
