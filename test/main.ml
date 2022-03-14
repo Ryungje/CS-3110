@@ -572,6 +572,7 @@ let command_tests =
     parse_name_exception_test "Parse quit" "quit" [] Escape;
     parse_command_test "Parse hit command" "  hit " Hit;
     parse_command_test "Parse stand command" "stand " Stand;
+    parse_command_test "Parse stand command" "   split " Split;
     parse_command_test "Parse ace to eleven" "ace  to   eleven  "
       AceToEleven;
     parse_command_test "Parse play command" "  play" Play;
@@ -583,6 +584,8 @@ let command_tests =
       "stand up" Malformed;
     parse_command_exception_test "Parse invalid command for play"
       "play again" Malformed;
+    parse_command_exception_test "Parse invalid command for split"
+      "split pair" Malformed;
     parse_command_exception_test
       "Parse invalid command for bet with too many integers"
       "   bet 10 18" Malformed;
