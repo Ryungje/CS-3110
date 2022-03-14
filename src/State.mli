@@ -73,6 +73,19 @@ val change_ace : string -> s -> s
     [pname] changes the value of their ace cards from one to eleven.
     Requires: [pname] must the name of a player in [st]. *)
 
+val split_hand : string -> s -> s
+(** [split_hand pname st] is the state of the game [st] when player with
+    [pname] splits their pair of cards with same denomination into two
+    hands. Requires: [pname] must the name of a player in [st] with a
+    valid pair of cards. *)
+
+val swap_hand : string -> s -> s
+(** [swap_hand pname st] is the state of the game [st] when player with
+    [pname] swaps their current hand for the other set of hand left on
+    the side when they split their cards. Requires: [pname] must the
+    name of a player in [st] that splitted their cards in the current
+    round of blackjack. *)
+
 val complete_hand : s -> s
 (** [complete_hand st] is the state of the game [st] after the dealer
     completes his hand (i.e. the dealer keeps taking cards until the

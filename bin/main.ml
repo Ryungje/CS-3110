@@ -4,6 +4,9 @@ open Player
 open Commands
 open State
 
+(* helper functions *)
+let remove_last lst = lst |> List.rev |> List.tl
+
 (* Step 4g: see if players want to play again or quit *)
 let rec game_again _ =
   print_string "Would you like to [play] again or [quit]? ";
@@ -33,12 +36,16 @@ let rec print_results plist d st =
   | [] -> st
   | h :: t ->
       let dvalue = hand_value d in
+      let snd_h = switch_hands h in
       let str = name_of h ^ "'s remaining chips: " in
       if
         dvalue > 21
         || (hand_value h > dvalue && hand_value h <= 21)
         || hand_value h = dvalue
            && List.length (show_hand h) < List.length (show_hand d)
+        || (hand_value snd_h > dvalue && hand_value snd_h <= 21)
+        || hand_value snd_h = dvalue
+           && List.length (show_hand snd_h) < List.length (show_hand d)
       then
         (* player won *)
         let new_player, new_st =
@@ -51,6 +58,8 @@ let rec print_results plist d st =
       else if
         hand_value h = dvalue
         && List.length (show_hand h) = List.length (show_hand d)
+        || hand_value snd_h = dvalue
+           && List.length (show_hand snd_h) = List.length (show_hand d)
       then
         (* player tied *)
         let _ = print_endline (str ^ string_of_int (current_total h)) in
@@ -66,29 +75,54 @@ let rec print_results plist d st =
         print_results t d new_st
 
 (* Step 4d: players give commands to complete hand *)
-let rec get_player_command st plist n =
-  if n < List.length plist then (
-    let p = List.nth (players_of st) n in
-    print_endline
-      ("Completing " ^ name_of p ^ "'s hand: "
-      ^ String.concat ", " (show_hand p));
+let rec get_player_command st plist n_plyr swapped =
+  if n_plyr < List.length plist then (
+    let p = List.nth (players_of st) n_plyr in
+    (* print out player's current stats *)
+    if not (has_snd_hand p) then
+      print_endline
+        ("Completing " ^ name_of p ^ "'s hand: "
+        ^ String.concat ", " (show_hand p))
+    else if has_snd_hand p && not swapped then
+      print_endline
+        ("Completing " ^ name_of p ^ "'s left hand: "
+        ^ String.concat ", " (show_hand p))
+    else
+      print_endline
+        ("Completing " ^ name_of p ^ "'s right hand: "
+        ^ String.concat ", " (show_hand p));
     print_endline ("Current bet: " ^ string_of_int (current_bet p));
     print_endline
       ("Remaining chips: "
       ^ string_of_int (current_total p - current_bet p));
-    let choice_str = "Choices: hit, stand" in
-    if has_ace p then print_endline (choice_str ^ ", ace to eleven")
-    else print_endline choice_str;
-    print_string "> ";
+    (* print out commands that player could choose from *)
+    let choice_str = [ "split"; "hit"; "stand"; "ace to eleven" ] in
+    if has_ace p && has_pair p && not (has_snd_hand p) then
+      print_endline ("Choices: " ^ String.concat ", " choice_str)
+    else if has_ace p then
+      print_endline
+        ("Choices: " ^ String.concat ", " (List.tl choice_str))
+    else if has_pair p && not (has_snd_hand p) then
+      print_endline
+        ("Choices: " ^ String.concat ", " (remove_last choice_str))
+    else
+      print_endline
+        ("Choices: "
+        ^ String.concat ", " (remove_last (List.tl choice_str)));
+    (* get player's input *) print_string "> ";
     match parse_command (read_line ()) with
     | exception End_of_file -> st
     | exception Escape -> exit 0
     | Stand ->
-        print_newline ();
-        get_player_command st plist (n + 1)
+        if p |> switch_hands |> hand_value = 0 || swapped then
+          let _ = print_newline () in
+          get_player_command st plist (n_plyr + 1) false
+        else
+          let new_st = swap_hand (name_of p) st in
+          get_player_command new_st plist n_plyr true
     | Hit ->
         let new_st = deal (name_of p) st in
-        let updated_p = List.nth (players_of new_st) n in
+        let updated_p = List.nth (players_of new_st) n_plyr in
         if is_bust updated_p then
           let _ =
             print_endline
@@ -96,17 +130,25 @@ let rec get_player_command st plist n =
               ^ String.concat ", " (show_hand updated_p));
             print_endline (name_of updated_p ^ " busted!\n")
           in
-          get_player_command new_st plist (n + 1)
-        else get_player_command new_st (players_of new_st) n
+          get_player_command new_st plist (n_plyr + 1) swapped
+        else
+          get_player_command new_st (players_of new_st) n_plyr swapped
+    | Split ->
+        if List.length (show_hand p) = 2 && has_pair p then
+          let new_st = split_hand (name_of p) st in
+          get_player_command new_st (players_of new_st) n_plyr swapped
+        else
+          let _ = print_endline "Cannot split cards! Try again." in
+          get_player_command st plist n_plyr swapped
     | AceToEleven ->
         let new_st = change_ace (name_of p) st in
-        get_player_command new_st plist n
+        get_player_command new_st plist n_plyr swapped
     | exception _ ->
         print_endline "Invalid command! Try again.";
-        get_player_command st plist n
+        get_player_command st plist n_plyr swapped
     | Play ->
         print_endline "Invalid command! Try again.";
-        get_player_command st plist n)
+        get_player_command st plist n_plyr swapped)
   else st
 
 (* Step 4e: print out results after natural (s) *)
@@ -181,10 +223,11 @@ let rec play_game num_rounds st =
       let new_st = handle_naturals bet_st in
       let end_st = reset_all new_st in
       print_results_from_natural (players_of end_st);
-      print_newline ();
-      play_game (num_rounds + 1) end_st)
+      let _ = print_newline () in
+      if game_again () then play_game (num_rounds + 1) end_st
+      else exit 0)
     else
-      let new_st = get_player_command bet_st (players_of st) 0 in
+      let new_st = get_player_command bet_st (players_of st) 0 false in
       let end_st = complete_hand new_st in
       print_endline "Completing Dealer's hand...";
       print_endline

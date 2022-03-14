@@ -109,12 +109,28 @@ let natural_dealer_unnatural_player st =
   { st with players = updated_player_list }
 
 let change_ace pname st =
-  let updated_player_llist =
+  let updated_player_list =
     List.map
       (fun p -> if name_of p = pname then ace_to_eleven p else p)
       st.players
   in
-  { st with players = updated_player_llist }
+  { st with players = updated_player_list }
+
+let split_hand pname st =
+  let updated_player_list =
+    List.map
+      (fun p -> if name_of p = pname then split_pair p else p)
+      st.players
+  in
+  { st with players = updated_player_list }
+
+let swap_hand pname st =
+  let updated_player_list =
+    List.map
+      (fun p -> if name_of p = pname then switch_hands p else p)
+      st.players
+  in
+  { st with players = updated_player_list }
 
 let rec adding_cards p d =
   let dealer_eleven = p |> ace_to_eleven in

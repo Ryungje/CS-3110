@@ -104,3 +104,25 @@ val ace_to_eleven : player -> player
 (** [ace_to_eleven p] is the player when the value of every ace card in
     the hand of [p] is changed to eleven. Requires: [p] is a valid
     player. *)
+
+val has_pair : player -> bool
+(** [has_pair] is whether or not [p] is currently holding a pair of
+    cards with the same denomination. For example, two jacks or two
+    sixes are a pair, but a jack and a queen is not a pair. Requires:
+    [p] is only holding two cards *)
+
+val split_pair : player -> player
+(** [split_pair p] represents a player that splits its initial two cards
+    into two separate hands such that [p] is currently holding one card
+    in one hand as the current hand for play and holding the other card
+    on the side as separate hand to play. Requires: [p] must has have a
+    pair of cards with same denominations. *)
+
+val switch_hands : player -> player
+(** [switch_hands p] represents a player that set its hand aside and is
+    now holding the its other set of cards that was originally set
+    aside. Requires: [p] must has have a non-empty second hand of cards. *)
+
+val has_snd_hand : player -> bool
+(** [has_snd_hand p] is whether or not [p] splitted a pair of cards and
+    has two hands on the table. Requires: [p] must be a valid player. *)

@@ -2,6 +2,7 @@ type command =
   | Hit
   | Stand
   | AceToEleven
+  | Split
   | Play
 
 exception Empty
@@ -45,6 +46,7 @@ let parse_command str =
     | "stand" when len = 1 -> Stand
     | "ace" when String.concat " " word_list = "ace to eleven" ->
         AceToEleven
+    | "split" when len = 1 -> Split
     | "play" when len = 1 -> Play
     | "quit" when len = 1 -> raise Escape
     | _ -> raise Malformed
