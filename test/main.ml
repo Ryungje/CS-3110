@@ -268,6 +268,12 @@ let has_ace_test
     (expected_output : bool) : test =
   name >:: fun _ -> assert_equal (has_ace p) expected_output
 
+let has_pair_test
+    (name : string)
+    (p : Player.player)
+    (expected_output : bool) : test =
+  name >:: fun _ -> assert_equal (has_pair p) expected_output
+
 let get_bet_tup (st : State.s) =
   ( st |> players_of |> List.map current_bet,
     st |> players_of |> List.map current_total )
@@ -392,6 +398,19 @@ let p3 =
   p0 |> add_card ("Four of Spades", 5) |> add_card ("Ten of Clubs", 5)
 
 let p_none = reset_hand p1
+
+let p_2pair =
+  p0 |> add_card ("Two of Diamonds", 2) |> add_card ("Two of Hearts", 2)
+
+let p_kingpair =
+  p0
+  |> add_card ("King of Hearts", 10)
+  |> add_card ("King of Spades", 10)
+
+let p8 =
+  p0
+  |> add_card ("Queen of Spades", 10)
+  |> add_card ("Jack of Diamonds", 10)
 
 (* Sample dealers *)
 
@@ -540,6 +559,10 @@ let player_tests =
         true,
         0,
         0 );
+    has_pair_test "Player with a pair of twos" p_2pair true;
+    has_pair_test "Player with a pair of kings" p_kingpair true;
+    has_pair_test "Player does NOT have a pair" p3 false;
+    has_pair_test "Player has two cards with same value" p8 false;
   ]
 
 let command_tests =
