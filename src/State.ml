@@ -52,6 +52,9 @@ let init_state num_deck num_player player_names bet_list =
       card_deck = end_deck;
     }
 
+let make_state plist d deck : s =
+  { players = plist; dealer = d; card_deck = deck }
+
 let rec add_card_to c pname p_list acc =
   match p_list with
   | [] -> acc
