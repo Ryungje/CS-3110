@@ -52,6 +52,10 @@ let init_state num_deck num_player player_names bet_list =
       card_deck = end_deck;
     }
 
+let make_empty_state (deck : int) : s =
+  let new_dealer = init_stats "Dealer" in
+  { players = []; dealer = new_dealer; card_deck = reset deck }
+
 let rec add_card_to c pname p_list acc =
   match p_list with
   | [] -> acc
