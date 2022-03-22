@@ -79,11 +79,10 @@ let rec get_player_command st plist n_plyr swapped =
   if n_plyr < List.length plist then (
     let p = List.nth (players_of st) n_plyr in
     (* print out player's current stats *)
-    if not (has_snd_hand p) then (
+    if not (has_snd_hand p) then
       print_endline
         ("Completing " ^ name_of p ^ "'s hand: "
-        ^ String.concat ", " (show_hand p));
-      card_display (show_hand p))
+        ^ String.concat ", " (show_hand p))
     else if has_snd_hand p && not swapped then
       print_endline
         ("Completing " ^ name_of p ^ "'s left hand: "
