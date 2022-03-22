@@ -34,4 +34,4 @@ val cards_of : deck -> card list
 (** [cards_of d] is the stack of cards in deck. Requires: [d] is a valid
     deck. *)
 
-val card_display : string -> unit
+val card_display : string -> string -> unit
