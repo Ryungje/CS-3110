@@ -1,3 +1,4 @@
+.PHONY: test check
 
 build:
 	dune build
@@ -5,7 +6,7 @@ build:
 utop:
 	OCAMLRUNPARAM=b dune utop src
 
-tests:
+test:
 	OCAMLRUNPARAM=b dune exec test/main.exe
 
 play:
