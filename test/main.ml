@@ -287,6 +287,13 @@ let has_pair_test
     (expected_output : bool) : test =
   name >:: fun _ -> assert_equal (has_pair p) expected_output
 
+let split_test (name : string) (p : Player.player) expected_output :
+    test =
+  name >:: fun _ ->
+  assert_equal expected_output
+    ( p |> split_pair |> show_hand,
+      p |> split_pair |> switch_hands |> show_hand )
+
 let get_bet_tup (st : State.s) =
   ( st |> players_of |> List.map current_bet,
     st |> players_of |> List.map current_total )
@@ -585,6 +592,10 @@ let player_tests =
       [ "King of Spades" ];
     player_hassndhand_test "Player has no second hand" p_2pair false;
     player_hassndhand_test "Player has a second hand" p_2split true;
+    split_test "Player splits pair of twos" p_2pair
+      ([ "Two of Diamonds" ], [ "Two of Hearts" ]);
+    split_test "Player splits pair of kings" p_kingpair
+      ([ "King of Hearts" ], [ "King of Spades" ]);
   ]
 
 let command_tests =
