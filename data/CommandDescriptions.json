@@ -1,0 +1,13 @@
+{
+  "blackjack": "insert description of blackjack game description/objective",
+  "commands" : [
+    {
+      "name": "double down",
+      "description": "doubles player's original bet when the player's hand has exactly two cards that totals to value of 9, 10, or 11."
+    },
+    {
+      "name": "split",
+      "description": "divides a player's hand into two separate hands such taht each hand has one card when the player has a pair of cards with the same denomination."
+    }
+  ]
+}
