@@ -74,6 +74,24 @@ let rec print_results plist d st =
         in
         print_results t d new_st
 
+(* Step 4di: figure out which choices players can select *)
+let rec build_choices p choice_str acc =
+  match (acc, choice_str) with
+  | 0, h :: t ->
+      if has_double p && not (has_snd_hand p) then
+        h :: build_choices p t (acc + 1)
+      else build_choices p t (acc + 1)
+  | 1, h :: t ->
+      if has_pair p && not (has_snd_hand p) then
+        h :: build_choices p t (acc + 1)
+      else build_choices p t (acc + 1)
+  | 2, h :: t -> h :: build_choices p t (acc + 1)
+  | 3, h :: t -> h :: build_choices p t (acc + 1)
+  | 4, h :: t ->
+      if has_ace p then h :: build_choices p t (acc + 1)
+      else build_choices p t (acc + 1)
+  | _, _ -> []
+
 (* Step 4d: players give commands to complete hand *)
 let rec get_player_command st plist n_plyr swapped =
   if n_plyr < List.length plist then (
@@ -96,19 +114,11 @@ let rec get_player_command st plist n_plyr swapped =
       ("Remaining chips: "
       ^ string_of_int (current_total p - current_bet p));
     (* print out commands that player could choose from *)
-    let choice_str = [ "split"; "hit"; "stand"; "ace to eleven" ] in
-    if has_ace p && has_pair p && not (has_snd_hand p) then
-      print_endline ("Choices: " ^ String.concat ", " choice_str)
-    else if has_ace p then
-      print_endline
-        ("Choices: " ^ String.concat ", " (List.tl choice_str))
-    else if has_pair p && not (has_snd_hand p) then
-      print_endline
-        ("Choices: " ^ String.concat ", " (remove_last choice_str))
-    else
-      print_endline
-        ("Choices: "
-        ^ String.concat ", " (remove_last (List.tl choice_str)));
+    let choice_str =
+      [ "double down"; "split"; "hit"; "stand"; "ace to eleven" ]
+    in
+    let new_str = build_choices p choice_str 0 in
+    print_endline ("Choices: " ^ String.concat ", " new_str);
     (* get player's input *) print_string "> ";
     match parse_command (read_line ()) with
     | exception End_of_file -> st
@@ -143,6 +153,25 @@ let rec get_player_command st plist n_plyr swapped =
     | AceToEleven ->
         let new_st = change_ace (name_of p) st in
         get_player_command new_st plist n_plyr swapped
+    | DoubleDown ->
+        if has_double p && not (has_snd_hand p) then
+          let new_st =
+            st |> double_down (name_of p) |> deal (name_of p)
+          in
+          let updated_p = List.nth (players_of new_st) n_plyr in
+          if is_bust updated_p then
+            let _ =
+              print_endline
+                (name_of updated_p ^ "'s hand: "
+                ^ String.concat ", " (show_hand updated_p));
+              print_endline (name_of updated_p ^ " busted!\n")
+            in
+            get_player_command new_st plist (n_plyr + 1) swapped
+          else
+            get_player_command new_st (players_of new_st) n_plyr swapped
+        else
+          let _ = print_endline "Cannot double down! Try again." in
+          get_player_command st plist n_plyr swapped
     | exception _ ->
         print_endline "Invalid command! Try again.";
         get_player_command st plist n_plyr swapped

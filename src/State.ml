@@ -132,6 +132,14 @@ let swap_hand pname st =
   in
   { st with players = updated_player_list }
 
+let double_down pname st =
+  let updated_player_list =
+    List.map
+      (fun p -> if name_of p = pname then double_bet p else p)
+      st.players
+  in
+  { st with players = updated_player_list }
+
 let rec adding_cards p d =
   let dealer_eleven = p |> ace_to_eleven in
   if hand_value dealer_eleven > 17 && hand_value dealer_eleven <= 21

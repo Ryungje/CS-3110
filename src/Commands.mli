@@ -6,6 +6,7 @@ type command =
   | Stand
   | AceToEleven
   | Split
+  | DoubleDown
   | Play
 
 exception Escape
