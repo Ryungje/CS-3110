@@ -58,3 +58,14 @@ let pop d =
       if t = [] then reset d.n |> shuffle else { d with cards = t }
 
 let cards_of d = d.cards
+
+let card_display symbol =
+  print_endline "┌─────────┐";
+  print_endline "│{}{}       │";
+  print_endline "│         │";
+  print_endline "│         │";
+  print_endline "│    {}    │";
+  print_endline "│         │";
+  print_endline "│         │";
+  print_endline "│       {}{}│";
+  print_endline "└─────────┘"

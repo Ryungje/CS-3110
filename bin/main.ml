@@ -238,6 +238,7 @@ let rec play_game num_rounds st =
       else ();
       print_newline ();
       print_endline "Results: ";
+      card_display "a";
       let final_st =
         print_results (players_of end_st) (end_st |> dealer_of) end_st
       in
