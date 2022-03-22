@@ -89,6 +89,19 @@ let player_test
       current_bet p,
       current_total p )
 
+let player_switchhand_test
+    (name : string)
+    (p : Player.player)
+    (expected_output : string list) : test =
+  name >:: fun _ ->
+  assert_equal expected_output (p |> switch_hands |> show_hand)
+
+let player_hassndhand_test
+    (name : string)
+    (p : Player.player)
+    (expected_output : bool) : test =
+  name >:: fun _ -> assert_equal expected_output (p |> has_snd_hand)
+
 (** [parse_number_test name i expected_output] constructs an OUnit test
     named [name] that asserts the quality of [expected_output] with
     [parse_number i]*)
@@ -316,10 +329,9 @@ let current_total_test
     (expected_output : int) : test =
   name >:: fun _ -> assert_equal expected_output (current_total p)
 
-(** [is_natural_test name p expected_output] constructs an OUnit test
-    named [name] that asserts the hand of the player [p] is the a
-    natural using the is_natural and compares output to
-    [expected_output]*)
+(** [natural_test name p expected_output] constructs an OUnit test named
+    [name] that asserts the hand of the player [p] is the a natural
+    using the is_natural and compares output to [expected_output]*)
 let natural_test (name : string) f (p : player) (expected_output : bool)
     : test =
   name >:: fun _ -> assert_equal expected_output (f p)
@@ -406,6 +418,8 @@ let p_kingpair =
   p0
   |> add_card ("King of Hearts", 10)
   |> add_card ("King of Spades", 10)
+
+let p_2split = p_2pair |> split_pair
 
 let p8 =
   p0
@@ -563,6 +577,14 @@ let player_tests =
     has_pair_test "Player with a pair of kings" p_kingpair true;
     has_pair_test "Player does NOT have a pair" p3 false;
     has_pair_test "Player has two cards with same value" p8 false;
+    player_switchhand_test "Player has a valid second hand" p_2split
+      [ "Two of Hearts" ];
+    player_switchhand_test
+      "Player has 2 hands with different number of cards"
+      (p_kingpair |> split_pair |> add_card ("Ace of Spades", 1))
+      [ "King of Spades" ];
+    player_hassndhand_test "Player has no second hand" p_2pair false;
+    player_hassndhand_test "Player has a second hand" p_2split true;
   ]
 
 let command_tests =

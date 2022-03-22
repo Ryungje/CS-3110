@@ -120,8 +120,8 @@ val split_pair : player -> player
 
 val switch_hands : player -> player
 (** [switch_hands p] represents a player that set its hand aside and is
-    now holding the its other set of cards that was originally set
-    aside. Requires: [p] must has have a non-empty second hand of cards. *)
+    now holding its other set of cards that was originally set aside.
+    Requires: [p] must has have a non-empty second hand of cards. *)
 
 val has_snd_hand : player -> bool
 (** [has_snd_hand p] is whether or not [p] splitted a pair of cards and
