@@ -24,11 +24,6 @@ val init_state : int -> int -> string list -> int list -> s
     Raises: [InvalidInput] if length of the list [player_names] is not
     equal to[num_player] *)
 
-val make_empty_state : int -> s
-(** [make_empty_state plist d deck] is the state constructed from the
-    valid given [plist]: player list, [d]: dealer, and [deck]: deck of
-    cards. *)
-
 val players_of : s -> player list
 (** [player_of st] is the list of players from [st]. Requires: [st] is a
     valid state. *)
