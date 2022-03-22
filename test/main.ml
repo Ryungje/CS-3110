@@ -102,6 +102,12 @@ let player_hassndhand_test
     (expected_output : bool) : test =
   name >:: fun _ -> assert_equal expected_output (p |> has_snd_hand)
 
+let player_hasdouble_test
+    (name : string)
+    (p : Player.player)
+    (expected_output : bool) : test =
+  name >:: fun _ -> assert_equal expected_output (has_double p)
+
 (** [parse_number_test name i expected_output] constructs an OUnit test
     named [name] that asserts the quality of [expected_output] with
     [parse_number i]*)
@@ -428,6 +434,9 @@ let p_kingpair =
 
 let p_2split = p_2pair |> split_pair
 
+let p_double =
+  p0 |> add_card ("Five of Hearts", 5) |> add_card ("Four of Spades", 4)
+
 let p8 =
   p0
   |> add_card ("Queen of Spades", 10)
@@ -596,6 +605,13 @@ let player_tests =
       ([ "Two of Diamonds" ], [ "Two of Hearts" ]);
     split_test "Player splits pair of kings" p_kingpair
       ([ "King of Hearts" ], [ "King of Spades" ]);
+    player_hasdouble_test "player has valid double" p_double true;
+    player_hasdouble_test
+      "player has valid total value but invalid card number"
+      (p_kingpair |> split_pair)
+      false;
+    player_hasdouble_test "player has 2 cards but invalid total value"
+      p_kingpair false;
   ]
 
 let command_tests =
@@ -632,6 +648,12 @@ let command_tests =
     parse_command_test "Parse ace to eleven" "ace  to   eleven  "
       AceToEleven;
     parse_command_test "Parse play command" "  play" Play;
+    parse_command_test "Parse double down command" "double down"
+      DoubleDown;
+    parse_command_test
+      "Parse double down command, when extra space exists"
+      "   double     down     " DoubleDown;
+    parse_command_test "Parse play command" "  play" Play;
     parse_command_exception_test "Parse empty command" "" Empty;
     parse_command_exception_test "Parse space only command" "    " Empty;
     parse_command_exception_test "Parse invalid command for hit"
@@ -654,6 +676,8 @@ let command_tests =
     parse_command_exception_test
       "Parse invalid bet command with a non-numeric input" "bet a pony"
       Malformed;
+    parse_command_exception_test "Parse double down with illegal words"
+      "double   e   down" Malformed;
     parse_command_exception_test "Parse invalid command for quit"
       "quit game now" Malformed;
     parse_command_exception_test
