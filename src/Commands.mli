@@ -57,6 +57,7 @@ val parse_command : string -> command
     - [parse_command "   hit  "] is [Hit]
     - [parse_command "stand"] is [Stand]
     - [parse_command "split"] is [Split]
+    - [parse_command "    double    down"] is [DoubleDown]
     - [parse_command "    ace    to   eleven"] is [AceToEleven]
     - [parse_command "play"] is [Play]
 
@@ -69,6 +70,7 @@ val parse_command : string -> command
     Raises [Malformed] is command is malformed. A command is malformed
     if the verb is not "hit","stand", "split" or "play", or if the verb
     is followed by more words, or if the phrase "ace to eleven" contains
-    extra characters that are not spaces.
+    extra characters that are not spaces, or if the phrase "double down"
+    contains extra charactesr that are not spaces.
 
     Raises: [Escape] if the verb is "quit". *)
