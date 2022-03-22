@@ -59,18 +59,6 @@ let pop d =
 
 let cards_of d = d.cards
 
-let card_display suit number =
-  let space = if String.length number = 2 then "" else " " in
-  print_endline "┌─────────┐";
-  print_endline ("│" ^ number ^ space ^ "       │");
-  print_endline "│         │";
-  print_endline "│         │";
-  print_endline ("│    " ^ suit ^ "    │");
-  print_endline "│         │";
-  print_endline "│         │";
-  print_endline ("│       " ^ space ^ number ^ "│");
-  print_endline "└─────────┘"
-
 let get_suit str =
   match String.split_on_char ' ' str with
   | _ :: [ "Spades" ] -> "♠"
@@ -95,3 +83,20 @@ let get_number str =
   | "Queen" :: _ -> "Q"
   | "King" :: _ -> "K"
   | _ -> ""
+
+let rec card_display_helper hand =
+  let suit = List.nth hand 0 |> get_suit in
+  let number = List.nth hand 0 |> get_number in
+  let space = if String.length number = 2 then "" else " " in
+  print_endline "┌─────────┐";
+  print_endline ("│" ^ number ^ space ^ " │");
+  print_endline "│ │";
+  print_endline "│ │";
+  print_endline ("│ " ^ suit ^ " │");
+  print_endline "│ │";
+  print_endline "│ │";
+  print_endline ("│ " ^ space ^ number ^ "│");
+  print_endline "└─────────┘";
+  if List.length hand > 1 then card_display_helper (List.tl hand)
+
+let card_display hand = card_display_helper hand
