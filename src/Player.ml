@@ -9,6 +9,7 @@ type player = {
   total : int;
   hidden_card : string * int;
   ace_is_eleven : bool;
+  doubled : bool;
 }
 
 let init_stats str =
@@ -23,6 +24,7 @@ let init_stats str =
       total = 0;
       hidden_card = ("", 0);
       ace_is_eleven = false;
+      doubled = false;
     }
 
 let name_of p = p.name
@@ -48,6 +50,7 @@ let reset_hand p =
     snd_hand = ([], 0);
     bet = 0;
     ace_is_eleven = false;
+    doubled = false;
   }
 
 let add_hidden c p = { p with hidden_card = c }
@@ -142,3 +145,11 @@ let switch_hands p =
   }
 
 let has_snd_hand p = snd p.snd_hand <> 0
+let has_doubled p = p.doubled
+
+let double_bet p =
+  if
+    List.length p.hand = 2
+    && (p.value = 9 || p.value = 10 || p.value = 11)
+  then { p with bet = p.bet + p.bet; doubled = true }
+  else p
