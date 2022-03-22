@@ -70,3 +70,28 @@ let card_display suit number =
   print_endline "│         │";
   print_endline ("│       " ^ space ^ number ^ "│");
   print_endline "└─────────┘"
+
+let get_suit str =
+  match String.split_on_char ' ' str with
+  | _ :: [ "Spades" ] -> "♠"
+  | _ :: [ "Hearts" ] -> "♥"
+  | _ :: [ "Clubs" ] -> "♣"
+  | _ :: [ "Diamonds" ] -> "♦"
+  | _ -> ""
+
+let get_number str =
+  match String.split_on_char ' ' str with
+  | "Ace" :: _ -> "A"
+  | "Two" :: _ -> "2"
+  | "Three" :: _ -> "3"
+  | "Four" :: _ -> "4"
+  | "Five" :: _ -> "5"
+  | "Six" :: _ -> "6"
+  | "Seven" :: _ -> "7"
+  | "Eight" :: _ -> "8"
+  | "Nine" :: _ -> "9"
+  | "Ten" :: _ -> "10"
+  | "Jack" :: _ -> "J"
+  | "Queen" :: _ -> "Q"
+  | "King" :: _ -> "K"
+  | _ -> ""
