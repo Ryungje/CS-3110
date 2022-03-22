@@ -86,6 +86,12 @@ val swap_hand : string -> s -> s
     name of a player in [st] that splitted their cards in the current
     round of blackjack. *)
 
+val double_down : string -> s -> s
+(** [double_down pname st] is the state of the game [st] when player
+    with [pname] has exactly two cards that totals to 9, 10, or 11 and
+    decides to double their bet. Requires: [pname] must the name of a
+    player in [st] with a valid set of cards. *)
+
 val complete_hand : s -> s
 (** [complete_hand st] is the state of the game [st] after the dealer
     completes his hand (i.e. the dealer keeps taking cards until the

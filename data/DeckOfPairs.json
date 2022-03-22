@@ -1,58 +1,58 @@
 [
   {
-    "name": "Two of Clubs",
-    "value": 2
+    "name": "Five of Clubs",
+    "value": 5
   },
   {
-    "name": "Two of Diamonds",
-    "value": 2
+    "name": "Five of Diamonds",
+    "value": 5
   },
   {
-    "name": "Two of Hearts",
-    "value": 2
+    "name": "Five of Hearts",
+    "value": 5
   },
   {
-    "name": "Two of Spades",
-    "value": 2
+    "name": "Five of Spades",
+    "value": 5
   },
   {
-    "name": "Two of Clubs",
-    "value": 2
+    "name": "Five of Clubs",
+    "value": 5
   },
   {
-    "name": "Two of Diamonds",
-    "value": 2
+    "name": "Five of Diamonds",
+    "value": 5
   },
   {
-    "name": "Two of Hearts",
-    "value": 2
+    "name": "Five of Hearts",
+    "value": 5
   },
   {
-    "name": "Two of Spades",
-    "value": 2
+    "name": "Five of Spades",
+    "value": 5
   },
   {
-    "name": "Two of Clubs",
-    "value": 2
+    "name": "Five of Clubs",
+    "value": 5
   },
   {
-    "name": "Two of Diamonds",
-    "value": 2
+    "name": "Five of Diamonds",
+    "value": 5
   },
   {
-    "name": "Two of Hearts",
-    "value": 2
+    "name": "Five of Hearts",
+    "value": 5
   },
   {
-    "name": "Three of Spades",
-    "value": 2
+    "name": "Four of Spades",
+    "value": 4
   },
   {
-    "name": "Queen of Spades",
-    "value": 10 
+    "name": "Six of Spades",
+    "value": 6
   },
   {
-    "name": "King of Spades",
-    "value": 10 
+    "name": "Seven of Spades",
+    "value": 7
   }
 ]

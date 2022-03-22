@@ -126,3 +126,14 @@ val switch_hands : player -> player
 val has_snd_hand : player -> bool
 (** [has_snd_hand p] is whether or not [p] splitted a pair of cards and
     has two hands on the table. Requires: [p] must be a valid player. *)
+
+val has_double : player -> bool
+(*8 [has_doubled p] is whether or not [p] can doubled down (i.e. when
+  the initial two cards totals to 9, 10, or 11). Requires: [p] must be a
+  valid player*)
+
+val double_bet : player -> player
+(** [double_bet p] is player that doubles their bet when the intial two
+    cards deal to the player [p] totals to 9, 10, or 11. If player does
+    not have exactly two cards or the card value does not total to 9, 10
+    or 11, then nothing changes. Requires: [p] must be a valid player.*)
