@@ -20,6 +20,25 @@ let parse_special_number i =
     | exception _ -> raise Malformed
     | _ -> raise Malformed
 
+let print_dealer_starting_cards st =
+  print_endline
+    ("Dealer's hand: "
+    ^ String.concat ", " (st |> dealer_of |> reveal |> show_hand));
+  if is_dealer_natural (st |> dealer_of) then
+    print_endline "Dealer has a natural!"
+  else ()
+
+let rec print_player_starting_cards st plist n print_nat =
+  if n < List.length plist then (
+    let p = List.nth (players_of st) n in
+    print_endline
+      (name_of p ^ "'s hand: " ^ String.concat ", " (show_hand p));
+    if print_nat && is_natural p then
+      let _ = print_endline (name_of p ^ " has a natural!") in
+      print_player_starting_cards st plist (n + 1) print_nat
+    else print_player_starting_cards st plist (n + 1) print_nat)
+  else ()
+
 (* Step 4g: see if players want to play again or quit *)
 let rec game_again _ =
   print_string "Would you like to [play] again or [quit]? ";
@@ -87,7 +106,7 @@ let rec print_results plist d st =
         in
         print_results t d new_st
 
-(* Step 4di: figure out which choices players can select *)
+(* Step 4ei: figure out which choices players can select *)
 let rec build_choices p choice_str acc =
   match (acc, choice_str) with
   | 0, h :: t ->
@@ -105,7 +124,7 @@ let rec build_choices p choice_str acc =
       else build_choices p t (acc + 1)
   | _, _ -> []
 
-(* Step 4d: players give commands to complete hand *)
+(* Step 4e: players give commands to complete hand *)
 let rec get_player_command st plist n_plyr swapped =
   if n_plyr < List.length plist then (
     let p = List.nth (players_of st) n_plyr in
@@ -114,17 +133,14 @@ let rec get_player_command st plist n_plyr swapped =
       print_endline
         ("Completing " ^ name_of p ^ "'s hand: "
         ^ String.concat ", " (show_hand p))
-      (*card_display (show_hand p)*)
     else if has_snd_hand p && not swapped then
       print_endline
         ("Completing " ^ name_of p ^ "'s left hand: "
         ^ String.concat ", " (show_hand p))
-      (*card_display (show_hand p)*)
     else
       print_endline
         ("Completing " ^ name_of p ^ "'s right hand: "
-        ^ String.concat ", " (show_hand p))
-      (*card_display (show_hand p)*);
+        ^ String.concat ", " (show_hand p));
     print_endline ("Current bet: " ^ string_of_int (current_bet p));
     print_endline
       ("Remaining chips: "
@@ -135,7 +151,8 @@ let rec get_player_command st plist n_plyr swapped =
     in
     let new_str = build_choices p choice_str 0 in
     print_endline ("Choices: " ^ String.concat ", " new_str);
-    (* get player's input *) print_string "> ";
+    (* get player's input *)
+    print_string "> ";
     match parse_command (read_line ()) with
     | exception End_of_file -> st
     | exception Escape -> exit 0
@@ -154,7 +171,6 @@ let rec get_player_command st plist n_plyr swapped =
             print_endline
               (name_of updated_p ^ "'s hand: "
               ^ String.concat ", " (show_hand updated_p));
-            (*card_display (show_hand updated_p);*)
             print_endline (name_of updated_p ^ " busted!\n")
           in
           get_player_command new_st plist (n_plyr + 1) swapped
@@ -170,13 +186,11 @@ let rec get_player_command st plist n_plyr swapped =
     | AceToEleven ->
         let new_st = change_ace (name_of p) st in
         let updated_p = List.nth (players_of new_st) n_plyr in
-          if is_bust updated_p then
-            let _ =
-              print_endline (name_of updated_p ^ " busted!\n")
-            in
-            get_player_command new_st plist (n_plyr + 1) swapped
-          else
-            get_player_command new_st (players_of new_st) n_plyr swapped
+        if is_bust updated_p then
+          let _ = print_endline (name_of updated_p ^ " busted!\n") in
+          get_player_command new_st plist (n_plyr + 1) swapped
+        else
+          get_player_command new_st (players_of new_st) n_plyr swapped
     | DoubleDown ->
         if has_double p && not (has_snd_hand p) then
           let new_st =
@@ -188,7 +202,6 @@ let rec get_player_command st plist n_plyr swapped =
               print_endline
                 (name_of updated_p ^ "'s hand: "
                 ^ String.concat ", " (show_hand updated_p));
-              (*card_display (show_hand updated_p);*)
               print_endline (name_of updated_p ^ " busted!\n")
             in
             get_player_command new_st plist (n_plyr + 1) swapped
@@ -205,7 +218,7 @@ let rec get_player_command st plist n_plyr swapped =
         get_player_command st plist n_plyr swapped)
   else st
 
-(* Step 4e: print out results after natural (s) *)
+(* Step 4d: print out results after natural (s) *)
 let rec print_results_from_natural plist =
   match plist with
   | [] -> ()
@@ -222,81 +235,68 @@ let handle_naturals st =
     unnatural_dealer_natural_player st
   else natural_dealer_unnatural_player st
 
-(* step 4c: handle insurances*)
-let rec handle_insurances st acc = 
-  if acc < List.length (players_of st) then 
+(* Step 4biii: handle insurances payments *)
+let rec handle_insurances st acc =
+  if acc < List.length (players_of st) then
     let p = List.nth (players_of st) acc in
-    if is_dealer_natural (dealer_of st) then 
-      let new_st = redeem_insurance (fun x y -> x + (y*2)) (name_of p) st in 
-      handle_insurances new_st (acc+1)
-    else 
-      let new_st = redeem_insurance (-) (name_of p) st in 
-      handle_insurances new_st (acc+1)
+    if is_dealer_natural (dealer_of st) then
+      let new_st =
+        redeem_insurance (fun x y -> x + (y * 2)) (name_of p) st
+      in
+      handle_insurances new_st (acc + 1)
+    else
+      let new_st = redeem_insurance ( - ) (name_of p) st in
+      handle_insurances new_st (acc + 1)
   else st
-  
-(* Step 4c: get insurance bet of each player *)
-let rec add_insurances st acc = 
-  if acc < List.length (players_of st) then 
-  let p = List.nth (players_of st) acc in
-  print_string ("Insurance bet for " ^ name_of p ^ ": ");
-  match parse_special_number (read_line ()) with 
-  | exception End_of_file -> st
-  | exception Escape -> exit 0
-  | exception _ ->
-      print_endline "Invalid integer! Try again.";
-      add_insurances st acc
-  | i when i <= ((current_bet p)/2) ->  
-    let new_st = increase_insurance i (name_of p) st in 
-       add_insurances new_st (acc+1)
-  | i -> print_endline "Bet is too high! Try again.";
-  add_insurances st acc
+
+(* Step 4bii: get insurance bet of each player *)
+let rec add_insurances st acc =
+  if acc < List.length (players_of st) then (
+    let p = List.nth (players_of st) acc in
+    print_string ("Insurance bet for " ^ name_of p ^ ": ");
+    match parse_special_number (read_line ()) with
+    | exception End_of_file -> st
+    | exception Escape -> exit 0
+    | exception _ ->
+        print_endline "Invalid integer! Try again.";
+        add_insurances st acc
+    | i when i <= current_bet p / 2 ->
+        let new_st = increase_insurance i (name_of p) st in
+        add_insurances new_st (acc + 1)
+    | i ->
+        print_endline "Bet is too high! Try again.";
+        add_insurances st acc)
   else st
-(** Step 4c: ask if players want to make insurance *)
-let rec make_insurance _ = 
+
+(** Step 4bi: ask if players want to make insurance *)
+let rec make_insurance _ =
   print_endline "Make insurance bet? [yes] or [no] ";
   print_string "> ";
-  match String.split_on_char ' ' (read_line ()) with 
-  | [a] -> if a = "yes" then true else if a = "no" then false else let _ = print_endline "Invalid input! Try again." in  make_insurance ()
-  | _ -> let _ = print_endline "Invalid input! Try again." in  make_insurance ()
+  match String.split_on_char ' ' (read_line ()) with
+  | [ a ] ->
+      if a = "yes" then true
+      else if a = "no" then false
+      else
+        let _ = print_endline "Invalid input! Try again." in
+        make_insurance ()
+  | _ ->
+      let _ = print_endline "Invalid input! Try again." in
+      make_insurance ()
 
-
-let print_dealer_starting_cards st = 
-print_endline
-  ("Dealer's hand: "
-  ^ String.concat ", " (st |> dealer_of |> reveal |> show_hand)
-  );
-  (*card_display (bet_st |> dealer_of |> reveal |> show_hand);*)
-if is_dealer_natural (st |> dealer_of) then (
-  print_endline "Dealer has a natural!")
-else ()
-
-(* Step 4b: print out starting two cards of each player *)
-let rec print_player_starting_cards st plist n print_nat=
-  if n < List.length plist then (
-    let p = List.nth (players_of st) n in
-    print_endline
-      (name_of p ^ "'s hand: " ^ String.concat ", " (show_hand p));
-    (*card_display (show_hand p);*)
-    if print_nat && is_natural p then
-      let _ = print_endline (name_of p ^ " has a natural!") in
-      print_player_starting_cards st plist (n + 1) print_nat
-    else  print_player_starting_cards st plist (n + 1) print_nat)
-  else ()
-
-(** Step 4c: check if players want to make insurance *)
-  let check_insurance st = 
-    if has_ace (dealer_of st) || (hand_value (dealer_of st)) = 10 then 
-      if make_insurance () then 
-        let _ = print_newline () in 
-        let new_st = add_insurances st 0 in 
-        let _ = print_newline () in 
-        let _ = print_dealer_starting_cards st in 
-        let _ = print_player_starting_cards st (players_of st) 0 true in 
-        let _ = print_newline () in 
-        let new_st = handle_insurances new_st 0 in 
-        (true,new_st)
-      else (false,st) 
-    else (false,st)
+(** Step 4b: check if players want to make insurance *)
+let check_insurance st =
+  if has_ace (dealer_of st) || hand_value (dealer_of st) = 10 then
+    if make_insurance () then
+      let _ = print_newline () in
+      let new_st = add_insurances st 0 in
+      let _ = print_newline () in
+      let _ = print_dealer_starting_cards st in
+      let _ = print_player_starting_cards st (players_of st) 0 true in
+      let _ = print_newline () in
+      let new_st = handle_insurances new_st 0 in
+      (true, new_st)
+    else (false, st)
+  else (false, st)
 
 (* Step 4a: get starting bets of all players at beginning of each
    round *)
@@ -322,23 +322,28 @@ let rec play_game num_rounds st =
     print_endline ("\nRound " ^ string_of_int num_rounds ^ ":");
     let b_st = get_player_bets st 0 in
     print_endline "\nShuffling cards... Dealing to players... ";
-      print_endline
-        ("Dealer's hand: "
-        ^ String.concat ", " (b_st |> dealer_of |> show_hand));
-    (*card_display (bet_st |> dealer_of |> show_hand)*)
+    print_endline
+      ("Dealer's hand: "
+      ^ String.concat ", " (b_st |> dealer_of |> show_hand));
     print_player_starting_cards b_st (players_of b_st) 0 false;
     print_newline ();
-    let insured, bet_st = check_insurance b_st in 
-    if (has_ace (dealer_of st) || (hand_value (dealer_of st)) = 10) && not insured then print_newline () else ();
-    if not insured && bet_st <> b_st then print_newline () else ();
-   if 
+    let insured, bet_st = check_insurance b_st in
+    if
+      (has_ace (dealer_of st) || hand_value (dealer_of st) = 10)
+      && not insured
+    then print_newline ()
+    else ();
+    if (not insured) && bet_st <> b_st then print_newline () else ();
+    if
       List.filter is_natural (players_of bet_st) |> List.length <> 0
       || is_dealer_natural (bet_st |> dealer_of)
     then (
-      if not insured then 
-      let _ = print_dealer_starting_cards bet_st in 
-      let _ = print_player_starting_cards bet_st (players_of bet_st) 0 true in 
-      print_newline ()
+      if not insured then
+        let _ = print_dealer_starting_cards bet_st in
+        let _ =
+          print_player_starting_cards bet_st (players_of bet_st) 0 true
+        in
+        print_newline ()
       else ();
       let new_st = handle_naturals bet_st in
       let end_st = reset_all new_st in
@@ -353,7 +358,6 @@ let rec play_game num_rounds st =
       print_endline
         ("Dealer's hand: "
         ^ String.concat ", " (end_st |> dealer_of |> show_hand));
-      (*card_display (end_st |> dealer_of |> show_hand);*)
       if end_st |> dealer_of |> hand_value > 21 then
         print_endline "Dealer busted!"
       else ();
