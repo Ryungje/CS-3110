@@ -137,3 +137,6 @@ val double_bet : player -> player
     cards deal to the player [p] totals to 9, 10, or 11. If player does
     not have exactly two cards or the card value does not total to 9, 10
     or 11, then nothing changes. Requires: [p] must be a valid player.*)
+
+val add_insurance : int -> player -> player
+val redeem_for_insurance : (int -> int -> int) -> player -> player

@@ -6,6 +6,7 @@ type player = {
   value : int;
   snd_hand : string list * int;
   bet : int;
+  insurance : int;
   total : int;
   hidden_card : string * int;
   ace_is_eleven : bool;
@@ -21,6 +22,7 @@ let init_stats str =
       value = 0;
       snd_hand = ([], 0);
       bet = 0;
+      insurance = 0;
       total = 0;
       hidden_card = ("", 0);
       ace_is_eleven = false;
@@ -49,6 +51,7 @@ let reset_hand p =
     value = 0;
     snd_hand = ([], 0);
     bet = 0;
+    insurance = 0;
     ace_is_eleven = false;
     doubled = false;
   }
@@ -153,3 +156,8 @@ let double_bet p =
   if has_double p && p.doubled = false then
     { p with bet = p.bet + p.bet; doubled = true }
   else p
+
+let add_insurance amount p = { p with insurance = amount }
+
+let redeem_for_insurance operator p =
+  { p with insurance = 0; total = operator p.total p.insurance }

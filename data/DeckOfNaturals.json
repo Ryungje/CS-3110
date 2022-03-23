@@ -1,0 +1,66 @@
+[
+  {
+    "name": "Ace of Clubs",
+    "value": 1 
+  },
+  {
+    "name": "Ace of Diamonds",
+    "value": 1 
+  },
+  {
+    "name": "Ace of Hearts",
+    "value": 1 
+  },
+  {
+    "name": "Ace of Spades",
+    "value": 1 
+  },
+  {
+    "name": "Ace of Clubs",
+    "value": 1 
+  },
+  {
+    "name": "Ace of Diamonds",
+    "value": 1 
+  },
+  {
+    "name": "Ace of Hearts",
+    "value": 1 
+  },
+  {
+    "name": "Ace of Spades",
+    "value": 1 
+  },
+  {
+    "name": "Ten of Clubs",
+    "value": 10 
+  },
+  {
+    "name": "Jack of Clubs",
+    "value": 10 
+  },
+  {
+    "name": "Five of Clubs",
+    "value": 5 
+  },
+  {
+    "name": "2 of Clubs",
+    "value": 2 
+  },
+  {
+    "name": "Ten of Clubs",
+    "value": 10 
+  },
+  {
+    "name": "Jack of Clubs",
+    "value": 10 
+  },
+  {
+    "name": "Queen of Clubs",
+    "value": 10 
+  },
+  {
+    "name": "King of Clubs",
+    "value": 10 
+  }
+]

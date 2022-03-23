@@ -91,6 +91,33 @@ let redeem_bet operator pname st =
   let updated_player_list = redeem_for operator pname st.players [] in
   { st with players = updated_player_list }
 
+let rec add_insurance_to amount pname p_list acc =
+  match p_list with
+  | [] -> acc
+  | h :: t ->
+      if name_of h = pname then acc @ [ add_insurance amount h ] @ t
+      else add_insurance_to amount pname t (acc @ [ h ])
+
+let increase_insurance amount pname st =
+  let updated_player_list =
+    add_insurance_to amount pname st.players []
+  in
+  { st with players = updated_player_list }
+
+let rec redeem_insurance_for operator pname p_list acc =
+  match p_list with
+  | [] -> acc
+  | h :: t ->
+      if name_of h = pname then
+        acc @ [ redeem_for_insurance operator h ] @ t
+      else redeem_insurance_for operator pname t (acc @ [ h ])
+
+let redeem_insurance operator pname st =
+  let updated_player_list =
+    redeem_insurance_for operator pname st.players []
+  in
+  { st with players = updated_player_list }
+
 let unnatural_dealer_natural_player st =
   let natural_list = List.map is_natural (players_of st) in
   let updated_player_list =

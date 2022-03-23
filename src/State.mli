@@ -54,6 +54,8 @@ val redeem_bet : (int -> int -> int) -> string -> s -> s
     total according to [operator]. All other attributes of [st] should
     remain unchanged. Requires: [pname] is the name of a valid player
     part of a valid state [st]. *)
+val increase_insurance : int -> string -> s -> s
+val redeem_insurance : (int -> int -> int) -> string -> s -> s
 
 val unnatural_dealer_natural_player : s -> s
 (** [unnatural_dealer_natural_player st] is the state of the game [st]
