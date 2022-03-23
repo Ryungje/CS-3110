@@ -139,4 +139,11 @@ val double_bet : player -> player
     or 11, then nothing changes. Requires: [p] must be a valid player.*)
 
 val add_insurance : int -> player -> player
+(** [add_insurnace amount p] is the player after [p] increases its
+    insurance by [amount]. Requires: [amount] >= 0. *)
+
 val redeem_for_insurance : (int -> int -> int) -> player -> player
+(** [redeem_for_insurance operator p] is the player after [p] adds its
+    insurance to its total according to [operator] and resets its
+    insurance to nothing. Requires: [operator] should be be using the
+    total of [p] as the first input and [amount] as the second input. *)
