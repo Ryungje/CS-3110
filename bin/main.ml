@@ -24,6 +24,7 @@ let print_dealer_starting_cards st =
   print_endline
     ("Dealer's hand: "
     ^ String.concat ", " (st |> dealer_of |> reveal |> show_hand));
+  card_display (st |> dealer_of |> reveal |> show_hand);
   if is_dealer_natural (st |> dealer_of) then
     print_endline "Dealer has a natural!"
   else ()
@@ -33,6 +34,7 @@ let rec print_player_starting_cards st plist n print_nat =
     let p = List.nth (players_of st) n in
     print_endline
       (name_of p ^ "'s hand: " ^ String.concat ", " (show_hand p));
+    card_display (show_hand p);
     if print_nat && is_natural p then
       let _ = print_endline (name_of p ^ " has a natural!") in
       print_player_starting_cards st plist (n + 1) print_nat
@@ -129,18 +131,21 @@ let rec get_player_command st plist n_plyr swapped =
   if n_plyr < List.length plist then (
     let p = List.nth (players_of st) n_plyr in
     (* print out player's current stats *)
-    if not (has_snd_hand p) then
+    if not (has_snd_hand p) then (
       print_endline
         ("Completing " ^ name_of p ^ "'s hand: "
-        ^ String.concat ", " (show_hand p))
-    else if has_snd_hand p && not swapped then
+        ^ String.concat ", " (show_hand p));
+      card_display (show_hand p))
+    else if has_snd_hand p && not swapped then (
       print_endline
         ("Completing " ^ name_of p ^ "'s left hand: "
-        ^ String.concat ", " (show_hand p))
-    else
+        ^ String.concat ", " (show_hand p));
+      card_display (show_hand p))
+    else (
       print_endline
         ("Completing " ^ name_of p ^ "'s right hand: "
         ^ String.concat ", " (show_hand p));
+      card_display (show_hand p));
     print_endline ("Current bet: " ^ string_of_int (current_bet p));
     print_endline
       ("Remaining chips: "
@@ -171,6 +176,7 @@ let rec get_player_command st plist n_plyr swapped =
             print_endline
               (name_of updated_p ^ "'s hand: "
               ^ String.concat ", " (show_hand updated_p));
+            card_display (show_hand p);
             print_endline (name_of updated_p ^ " busted!\n")
           in
           get_player_command new_st plist (n_plyr + 1) swapped
@@ -202,6 +208,7 @@ let rec get_player_command st plist n_plyr swapped =
               print_endline
                 (name_of updated_p ^ "'s hand: "
                 ^ String.concat ", " (show_hand updated_p));
+              card_display (show_hand p);
               print_endline (name_of updated_p ^ " busted!\n")
             in
             get_player_command new_st plist (n_plyr + 1) swapped
@@ -325,6 +332,7 @@ let rec play_game num_rounds st =
     print_endline
       ("Dealer's hand: "
       ^ String.concat ", " (b_st |> dealer_of |> show_hand));
+    card_display (b_st |> dealer_of |> show_hand);
     print_player_starting_cards b_st (players_of b_st) 0 false;
     print_newline ();
     let insured, bet_st = check_insurance b_st in
@@ -358,6 +366,7 @@ let rec play_game num_rounds st =
       print_endline
         ("Dealer's hand: "
         ^ String.concat ", " (end_st |> dealer_of |> show_hand));
+      card_display (end_st |> dealer_of |> show_hand);
       if end_st |> dealer_of |> hand_value > 21 then
         print_endline "Dealer busted!"
       else ();

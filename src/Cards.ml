@@ -89,17 +89,17 @@ let get_number str =
 
 let rec build_tops (hand : string list) =
   if List.length hand > 0 then
-    "┌─────────┐   " ^ build_tops (List.tl hand)
+    "┌───────┐   " ^ build_tops (List.tl hand)
   else ""
 
 let rec build_bottoms (hand : string list) =
   if List.length hand > 0 then
-    "└─────────┘   " ^ build_bottoms (List.tl hand)
+    "└───────┘   " ^ build_bottoms (List.tl hand)
   else ""
 
 let rec build_middles (hand : string list) =
   if List.length hand > 0 then
-    "│         │   " ^ build_middles (List.tl hand)
+    "│       │   " ^ build_middles (List.tl hand)
   else ""
 
 let rec build_numbers (hand : string list) top =
@@ -107,26 +107,24 @@ let rec build_numbers (hand : string list) top =
     let number = List.hd hand |> get_number in
     let space = if String.length number = 2 then "" else " " in
     if top then
-      "│" ^ number ^ space ^ "       │   "
+      "│" ^ number ^ space ^ "     │   "
       ^ build_numbers (List.tl hand) top
     else
-      "│       " ^ space ^ number ^ "│   "
+      "│     " ^ space ^ number ^ "│   "
       ^ build_numbers (List.tl hand) top
   else ""
 
 let rec build_suits (hand : string list) =
   if List.length hand > 0 then
     let suit = List.hd hand |> get_suit in
-    "│    " ^ suit ^ "    │   " ^ build_suits (List.tl hand)
+    "│   " ^ suit ^ "   │   " ^ build_suits (List.tl hand)
   else ""
 
 let rec card_display_helper hand =
   print_endline (build_tops hand);
   print_endline (build_numbers hand true);
   print_endline (build_middles hand);
-  print_endline (build_middles hand);
   print_endline (build_suits hand);
-  print_endline (build_middles hand);
   print_endline (build_middles hand);
   print_endline (build_numbers hand false);
   print_endline (build_bottoms hand)
