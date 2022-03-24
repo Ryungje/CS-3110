@@ -83,8 +83,10 @@ let rec print_results plist d st =
         let new_player, new_st =
           update_player_total ( + ) (name_of h) st
         in
+        let _ = print_string str in
         let _ =
-          print_endline (str ^ string_of_int (current_total new_player))
+          ANSITerminal.print_string [ ANSITerminal.green ]
+            (string_of_int (current_total new_player) ^ "\n")
         in
         print_results t d new_st
       else if
@@ -101,8 +103,10 @@ let rec print_results plist d st =
         let new_player, new_st =
           update_player_total ( - ) (name_of h) st
         in
+        let _ = print_string str in
         let _ =
-          print_endline (str ^ string_of_int (current_total new_player))
+          ANSITerminal.print_string [ ANSITerminal.red ]
+            (string_of_int (current_total new_player) ^ "\n")
         in
         print_results t d new_st
 
@@ -436,7 +440,7 @@ let rec num_players _ =
 
 (** [main ()] prompts for the game to play, then starts it. *)
 let main () =
-  ANSITerminal.print_string [ ANSITerminal.red ]
+  ANSITerminal.print_string [ ANSITerminal.blue ]
     "\n\nWelcome to OCasino's BlackJack.\n";
   num_players ()
 
