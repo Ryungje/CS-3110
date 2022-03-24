@@ -3,6 +3,7 @@ open Cards
 open Player
 open Commands
 open State
+open Instructions
 
 (* helper functions *)
 let remove_last lst = lst |> List.rev |> List.tl
@@ -47,6 +48,11 @@ let rec game_again _ =
   match parse_command (read_line ()) with
   | exception End_of_file -> false
   | exception Escape -> false
+  | exception Help ->
+      print_endline "*************************************";
+      terminology_descrip ();
+      print_endline "*************************************";
+      game_again ()
   | exception _ ->
       print_endline "Invalid command! Try again.";
       game_again ()
@@ -165,6 +171,11 @@ let rec get_player_command st plist n_plyr swapped =
     match parse_command (read_line ()) with
     | exception End_of_file -> st
     | exception Escape -> exit 0
+    | exception Help ->
+        print_endline "*************************************";
+        terminology_descrip ();
+        print_endline "*************************************";
+        get_player_command st plist n_plyr swapped
     | Stand ->
         if p |> switch_hands |> hand_value = 0 || swapped then
           let _ = print_newline () in
@@ -268,6 +279,11 @@ let rec add_insurances st acc =
     match parse_special_number (read_line ()) with
     | exception End_of_file -> st
     | exception Escape -> exit 0
+    | exception Help ->
+        print_endline "*************************************";
+        terminology_descrip ();
+        print_endline "*************************************";
+        add_insurances st acc
     | exception _ ->
         print_endline "Invalid integer! Try again.";
         add_insurances st acc
@@ -286,6 +302,11 @@ let rec make_insurance _ =
   match String.split_on_char ' ' (read_line ()) with
   | [ a ] ->
       if a = "quit" then exit 0
+      else if a = "help" then
+        let _ = print_endline "*************************************" in
+        let _ = terminology_descrip () in
+        let _ = print_endline "*************************************" in
+        make_insurance ()
       else if a = "yes" then true
       else if a = "no" then false
       else
@@ -320,6 +341,11 @@ let rec get_player_bets st acc =
     match parse_number (read_line ()) with
     | exception End_of_file -> st
     | exception Escape -> exit 0
+    | exception Help ->
+        print_endline "*************************************";
+        terminology_descrip ();
+        print_endline "*************************************";
+        get_player_bets st acc
     | exception _ ->
         print_endline "Invalid integer! Try again.";
         get_player_bets st acc
@@ -395,12 +421,16 @@ let rec get_num_decks nplayers name_list chips_list =
     match parse_number (read_line ()) with
     | exception End_of_file -> ()
     | exception Escape -> exit 0
+    | exception Help ->
+        print_endline "*************************************";
+        terminology_descrip ();
+        print_endline "*************************************";
+        get_num_decks nplayers name_list chips_list
     | exception _ ->
         print_endline "Invalid integer! Try again.";
         get_num_decks nplayers name_list chips_list
     | i ->
         let st0 = init_state i nplayers name_list chips_list in
-        print_newline ();
         play_game 1 st0
   in
   ()
@@ -412,6 +442,11 @@ let rec get_starting_chips n =
   match parse_number (read_line ()) with
   | exception End_of_file -> get_starting_chips n
   | exception Escape -> exit 0
+  | exception Help ->
+      print_endline "*************************************";
+      terminology_descrip ();
+      print_endline "*************************************";
+      get_starting_chips n
   | exception _ ->
       print_endline "Invalid integer! Try again.";
       get_starting_chips n
@@ -425,6 +460,11 @@ let rec get_players n n_list b_list acc =
       match parse_name (read_line ()) n_list with
       | exception End_of_file -> ()
       | exception Escape -> exit 0
+      | exception Help ->
+          print_endline "*************************************";
+          terminology_descrip ();
+          print_endline "*************************************";
+          get_players n n_list b_list acc
       | exception _ ->
           print_endline "Invalid name! Try again.";
           get_players n n_list b_list acc
@@ -442,6 +482,11 @@ let rec num_players _ =
     match parse_number (read_line ()) with
     | exception End_of_file -> ()
     | exception Escape -> exit 0
+    | exception Help ->
+        print_endline "*************************************";
+        terminology_descrip ();
+        print_endline "*************************************";
+        num_players ()
     | exception _ ->
         print_endline "Invalid integer! Try again.";
         num_players ()
@@ -454,6 +499,7 @@ let main () =
   ANSITerminal.print_string
     [ ANSITerminal.blue; ANSITerminal.Bold ]
     "\n\nWelcome to OCasino's BlackJack.\n";
+  blackjack_descrip ();
   num_players ()
 
 (* Execute the game engine. *)

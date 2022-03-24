@@ -29,17 +29,19 @@ let description =
       (Yojson.Basic.from_file "data/GameDescriptions.json")
   with Type_error (s, _) -> failwith ("Parsing error: " ^ s)
 
-let blackjack_descrip =
+let blackjack_descrip _ =
   ANSITerminal.print_string [ ANSITerminal.Bold ]
-    "Objective of the game:";
-  print_string (description.blackjack ^ "\n")
+    "Objective of the game: ";
+  print_endline (description.blackjack ^ "\n")
 
-let terminology_descrip =
+let terminology_descrip _ =
   ANSITerminal.print_string [ ANSITerminal.Bold ]
     "Definitions of BlackJack terminologies: \n";
   let rec helper term_list =
     match term_list with
     | [] -> ()
-    | h :: t -> print_endline ("- " ^ h.name ^ ": " ^ h.explanation)
+    | h :: t ->
+        let _ = print_endline ("- " ^ h.name ^ ": " ^ h.explanation) in
+        helper t
   in
   helper description.terminologies
