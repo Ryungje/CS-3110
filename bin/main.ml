@@ -285,7 +285,8 @@ let rec make_insurance _ =
   print_string "> ";
   match String.split_on_char ' ' (read_line ()) with
   | [ a ] ->
-      if a = "yes" then true
+      if a = "quit" then exit 0
+      else if a = "yes" then true
       else if a = "no" then false
       else
         let _ = print_endline "Invalid input! Try again." in
@@ -330,7 +331,8 @@ let rec get_player_bets st acc =
    quit *)
 let rec play_game num_rounds st =
   let _ =
-    print_endline ("\nRound " ^ string_of_int num_rounds ^ ":");
+    ANSITerminal.print_string [ ANSITerminal.Bold ]
+      ("\nRound " ^ string_of_int num_rounds ^ ":\n");
     let b_st = get_player_bets st 0 in
     print_endline "\nShuffling cards... Dealing to players... ";
     print_endline
@@ -449,7 +451,8 @@ let rec num_players _ =
 
 (** [main ()] prompts for the game to play, then starts it. *)
 let main () =
-  ANSITerminal.print_string [ ANSITerminal.blue ]
+  ANSITerminal.print_string
+    [ ANSITerminal.blue; ANSITerminal.Bold ]
     "\n\nWelcome to OCasino's BlackJack.\n";
   num_players ()
 
