@@ -7,31 +7,31 @@
     },
     {
       "name": "stand",
-      "description": "Ends the player's turn with no new cards added"
+      "description": "ends the player's turn with no new cards added"
     },
     {
       "name": "bet",
-      "description": "Increase the player's bet"
+      "description": "increase the player's bet"
     },
     {
       "name": "natural",
-      "description": "A hand that consists of an Ace and either a 10 or Royal card"
+      "description": "a hand that consists of an Ace and either a 10 or Royal card"
     },
     {
       "name": "insurance",
-      "description": "The player makes an insurance in the case the dealer's face up card is an Ace. Add up to half the initial bet, if the dealer does in fact have a blackjack, the player wins back their insurance."
+      "description": "in the case the dealer's face up card is an Ace or a ten-card, the player can make an insuranceup to half of the initial bet that the dealer has a natural. If the dealer does have a natural, then the player is paid double their insurance."
     },
     {
       "name": "double down",
-      "description": "Doubles player's original bet when the player's hand has exactly two cards that totals to value of 9, 10, or 11"
+      "description": "doubles player's original bet when the player's hand has exactly two cards that totals to value of 9, 10, or 11"
     },
     {
       "name": "split",
-      "description": "Divides a player's hand into two separate hands such taht each hand has one card when the player has a pair of cards with the same denomination"
+      "description": "divides a player's hand into two separate hands such taht each hand has one card when the player has a pair of cards with the same denomination"
     },
     {
       "name": "ace to eleven",
-      "description": "description"
+      "description": "if an ace is present in hand, change the value of the Ace card to have a card value of 11"
     }
   ]
 }
