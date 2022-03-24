@@ -1,33 +1,33 @@
 {
   "blackjack": "insert description of blackjack game description/objective",
-  "terminology" : [
+  "terminology": [
     {
       "name": "hit",
-      "description": "description"
+      "description": "prompts the dealer to add a new card to the player's hand"
     },
     {
       "name": "stand",
-      "description": "description"
+      "description": "Ends the player's turn with no new cards added"
     },
     {
       "name": "bet",
-      "description": "description"
+      "description": "Increase the player's bet"
     },
     {
       "name": "natural",
-      "description": "description"
+      "description": "A hand that consists of an Ace and either a 10 or Royal card"
     },
     {
       "name": "insurance",
-      "description": "description"
+      "description": "The player makes an insurance in the case the dealer's face up card is an Ace. Add up to half the initial bet, if the dealer does in fact have a blackjack, the player wins back their insurance."
     },
     {
       "name": "double down",
-      "description": "doubles player's original bet when the player's hand has exactly two cards that totals to value of 9, 10, or 11"
+      "description": "Doubles player's original bet when the player's hand has exactly two cards that totals to value of 9, 10, or 11"
     },
     {
       "name": "split",
-      "description": "divides a player's hand into two separate hands such taht each hand has one card when the player has a pair of cards with the same denomination"
+      "description": "Divides a player's hand into two separate hands such taht each hand has one card when the player has a pair of cards with the same denomination"
     },
     {
       "name": "ace to eleven",
