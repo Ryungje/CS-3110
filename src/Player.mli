@@ -69,7 +69,7 @@ val add_hidden : string * int -> player -> player
 
 val reveal : player -> player
 (** [reveal d] is the dealer [d] who added their hidden card to their
-    shown hand. Requires: d] must be a valid dealer. *)
+    shown hand. Requires: [d] must be a valid dealer. *)
 
 val add_bet : int -> player -> player
 (** [add_bet amount p] is the player after [p] increases its bet by
@@ -81,7 +81,7 @@ val redeem : (int -> int -> int) -> player -> player
     Requires: [operator] should be (+) or (-). *)
 
 val is_natural : player -> bool
-(** [is_natural p] is whether or not the [p]] has a natural (i.e. the
+(** [is_natural p] is whether or not the [p] has a natural (i.e. the
     player's first two cards is an ace and a ten-card). Requires: [p] is
     a valid player who only has two cards. *)
 
