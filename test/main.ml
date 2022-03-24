@@ -108,6 +108,18 @@ let player_hasdouble_test
     (expected_output : bool) : test =
   name >:: fun _ -> assert_equal expected_output (has_double p)
 
+let player_insurance_test
+    (name : string)
+    (amount : int)
+    (operator : int -> int -> int)
+    (p : Player.player)
+    (expected_output : int) : test =
+  name >:: fun _ ->
+  assert_equal expected_output
+    (p |> add_insurance amount
+    |> redeem_for_insurance operator
+    |> current_total)
+
 (** [parse_number_test name i expected_output] constructs an OUnit test
     named [name] that asserts the quality of [expected_output] with
     [parse_number i]*)
@@ -323,6 +335,23 @@ let state_redeembet_test
   name >:: fun _ ->
   assert_equal expected_output
     (redeem_bet operator pname st |> get_bet_tup)
+
+let get_insurance (st : State.s) =
+  st |> players_of |> List.map current_total
+
+let state_insurance_test
+    (name : string)
+    (amount : int)
+    (operator : int -> int -> int)
+    (pname : string)
+    (st : State.s)
+    (expected_output : int list) : test =
+  name >:: fun _ ->
+  assert_equal expected_output
+    (st
+    |> increase_insurance amount pname
+    |> redeem_insurance operator pname
+    |> get_insurance)
 
 (** [current_bet_test name p expected_output] constructs an OUnit test
     named [name] that asserts the current_bet of the player [p] is the
@@ -612,6 +641,8 @@ let player_tests =
       false;
     player_hasdouble_test "player has 2 cards but invalid total value"
       p_kingpair false;
+    player_insurance_test "positive insurance operation" 10 ( + ) p0 10;
+    player_insurance_test "positive insurance operation" 6 ( - ) p0 (-6);
   ]
 
 let command_tests =
@@ -732,6 +763,17 @@ let state_tests =
     state_completedealer_test "test dealer completes hand" 2 st2;
     state_resetall_test "test hand of cards is reset for all players"
       st3;
+    state_increasebet_test "test increase bet" 1 "Bob" st0
+      ([ 1; 0; 0 ], [ 1; 2; 3 ]);
+    state_redeembet_test "test rewarding chips for a winning player"
+      ( + ) "Henry" st1
+      ([ 0; 0; 0 ], [ 1; 2; 8 ]);
+    state_redeembet_test "test taking chips for a losing player" ( - )
+      "Henry" st1
+      ([ 0; 0; 0 ], [ 1; 2; -2 ]);
+    state_insurance_test
+      "test increasing and redeeming insurance with addition" 10 ( + )
+      "Bob" st0 [ 11; 2; 3 ];
   ]
 
 let suite =
