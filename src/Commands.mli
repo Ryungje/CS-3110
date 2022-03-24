@@ -32,7 +32,9 @@ val parse_number : string -> int
     Raises: [Malformed] if [i] cannot be trimmed to a single numeric
     (0-9) string without spaces or if [parse_number i] is <=0.
 
-    Raises: [Escape] if [i] is "quit". *)
+    Raises: [Escape] if [i] is "quit".
+
+    Raises: [Help] if the verbis "help"*)
 
 val parse_name : string -> string list -> string list
 (** [parse_name n n_list] is the list containing all existing player
@@ -46,7 +48,9 @@ val parse_name : string -> string list -> string list
 
     Raises: [Malformed] if parsed [n] already exits in [n_list]
 
-    Raises: [Escape] if [i] is "quit". *)
+    Raises: [Escape] if [i] is "quit".
+
+    Raises: [Help] if the verbis "help"*)
 
 val parse_command : string -> command
 (** [parse_command str] parses a player's input into a [command] as
@@ -73,4 +77,6 @@ val parse_command : string -> command
     extra characters that are not spaces, or if the phrase "double down"
     contains extra charactesr that are not spaces.
 
-    Raises: [Escape] if the verb is "quit". *)
+    Raises: [Escape] if the verb is "quit".
+
+    Raises: [Help] if the verbis "help" *)
