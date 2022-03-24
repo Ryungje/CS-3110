@@ -9,6 +9,7 @@ type command =
 exception Empty
 exception Malformed
 exception Escape
+exception Help
 
 let parse_number i =
   let word_list =
@@ -17,6 +18,7 @@ let parse_number i =
   if word_list = [] then raise Empty
   else if List.length word_list > 1 then raise Malformed
   else if List.hd word_list = "quit" then raise Escape
+  else if List.hd word_list = "help" then raise Help
   else
     match int_of_string (List.hd word_list) with
     | (n : int) when n >= 1 -> n
@@ -30,6 +32,8 @@ let parse_name n n_list =
   if word_list = [] then raise Empty
   else if List.length word_list = 1 && List.hd word_list = "quit" then
     raise Escape
+  else if List.length word_list = 1 && List.hd word_list = "help" then
+    raise Help
   else
     let name = String.concat " " word_list in
     if List.exists (fun x -> x = name) n_list then raise Malformed
@@ -52,4 +56,5 @@ let parse_command str =
         DoubleDown
     | "play" when len = 1 -> Play
     | "quit" when len = 1 -> raise Escape
+    | "help" when len = 1 -> raise Help
     | _ -> raise Malformed
