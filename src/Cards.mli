@@ -35,3 +35,6 @@ val cards_of : deck -> card list
     deck. *)
 
 val card_display : string list -> unit
+(** [card_display h] displays in the terminal the current hand [h] as
+    card images. Requires: [h] is a valid string list of cards as
+    described in standardDeck.json *)
