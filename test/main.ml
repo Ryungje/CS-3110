@@ -663,6 +663,7 @@ let command_tests =
     parse_number_exception_test "Parse empty input" "" Empty;
     parse_number_exception_test "Parse space only input" "    " Empty;
     parse_number_exception_test "Parse quit input" "quit" Escape;
+    parse_number_exception_test "Parse help input" "help" Help;
     parse_name_test "Parse valid name: Bob" "  Bob  " [] [ "Bob" ];
     parse_name_test "Parse valid name : Henry Conlon" "Henry   Conlon"
       [ "Bob" ]
@@ -673,6 +674,7 @@ let command_tests =
     parse_name_exception_test "Parse name already in list" "Bob"
       [ "Henry"; "Bob" ] Malformed;
     parse_name_exception_test "Parse quit" "quit" [] Escape;
+    parse_name_exception_test "Parse help" "help" [] Help;
     parse_command_test "Parse hit command" "  hit " Hit;
     parse_command_test "Parse stand command" "stand " Stand;
     parse_command_test "Parse stand command" "   split " Split;
@@ -716,6 +718,9 @@ let command_tests =
     parse_command_exception_test "Parse quit input in sentence"
       "quit please" Malformed;
     parse_command_exception_test "Parse quit" "quit" Escape;
+    parse_command_exception_test "Parse help" "help" Help;
+    parse_command_exception_test "Parse invalid help command" "help me"
+      Malformed;
   ]
 
 (* Sample states *)
