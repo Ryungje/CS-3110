@@ -128,9 +128,9 @@ val has_snd_hand : player -> bool
     has two hands on the table. Requires: [p] must be a valid player. *)
 
 val has_double : player -> bool
-(*8 [has_doubled p] is whether or not [p] can doubled down (i.e. when
-  the initial two cards totals to 9, 10, or 11). Requires: [p] must be a
-  valid player*)
+(** [has_doubled p] is whether or not [p] can doubled down (i.e. when
+    the initial two cards totals to 9, 10, or 11). Requires: [p] must be
+    a valid player*)
 
 val double_bet : player -> player
 (** [double_bet p] is player that doubles their bet when the intial two
