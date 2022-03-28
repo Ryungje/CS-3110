@@ -17,12 +17,14 @@ val init_state : int -> int -> string list -> int list -> s
     initial state of the game when playing Blackjack with [num_deck]
     amount of standard card decks, [num_player] amount of players (not
     including the dealer), [player_names] and [bet_list] as the ordered
-    list of names and total starting chips corresponding to player 1,
-    player 2, and etc. Each player should be dealt 2 cards. The dealer
-    should be dealt one shown card and one hidden card.
+    list of names and total starting chips respectively correspond to
+    player 1, player 2, and etc. (i.e. if [n1; n2;...;nk] is the list of
+    player names and [b1; b2;...;bk] is the list of bets, the player i
+    has name ni and bet bi.) Each player should be dealt 2 cards. The
+    dealer should be dealt one shown card and one hidden card.
 
-    Raises: [InvalidInput] if length of the list [player_names] is not
-    equal to[num_player] *)
+    Raises: [InvalidInput] if length of the list [player_names] and
+    length of list [bet_list] is not equal to [num_player] *)
 
 val players_of : s -> player list
 (** [player_of st] is the list of players from [st]. Requires: [st] is a

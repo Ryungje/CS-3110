@@ -32,11 +32,12 @@ let description =
 let blackjack_descrip _ =
   ANSITerminal.print_string [ ANSITerminal.Bold ]
     "Objective of the game: ";
-  print_endline (description.blackjack ^ "\n")
+  print_endline
+    (description.blackjack ^ "(* type [help] for more details *)" ^ "\n")
 
 let terminology_descrip _ =
   ANSITerminal.print_string [ ANSITerminal.Bold ]
-    "Definitions of BlackJack terminologies: \n";
+    "BlackJack terminologies: \n";
   let rec helper term_list =
     match term_list with
     | [] -> ()

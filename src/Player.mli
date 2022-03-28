@@ -86,9 +86,9 @@ val is_natural : player -> bool
     a valid player who only has two cards. *)
 
 val redeem_for_natural : bool -> player -> player
-(** [is_natural p] is the player who collects 1.5 times their starting
-    bet if [b]. Otherwise, the player simply resets its bet back to
-    zero. Requires: [p] is a valid player. *)
+(** [redeem_for_natural b p] is the player [p] who collects 1.5 times
+    their starting bet if [b]. Otherwise, the player simply resets its
+    bet back to zero. Requires: [p] is a valid player. *)
 
 val is_dealer_natural : player -> bool
 (** [is_dealer_natural d] is whether or not the [d] has a natural (i.e.

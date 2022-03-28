@@ -22,9 +22,7 @@ let parse_special_number i =
     | _ -> raise Malformed
 
 let print_dealer_starting_cards st =
-  print_endline
-    ("Dealer's hand: "
-    ^ String.concat ", " (st |> dealer_of |> reveal |> show_hand));
+  print_endline "Dealer's hand: ";
   card_display (st |> dealer_of |> reveal |> show_hand);
   if is_dealer_natural (st |> dealer_of) then
     print_endline "Dealer has a natural!"
@@ -33,8 +31,7 @@ let print_dealer_starting_cards st =
 let rec print_player_starting_cards st plist n print_nat =
   if n < List.length plist then (
     let p = List.nth (players_of st) n in
-    print_endline
-      (name_of p ^ "'s hand: " ^ String.concat ", " (show_hand p));
+    print_endline (name_of p ^ "'s hand: ");
     card_display (show_hand p);
     if print_nat && is_natural p then
       let _ = print_endline (name_of p ^ " has a natural!") in
@@ -142,19 +139,16 @@ let rec get_player_command st plist n_plyr swapped =
     let p = List.nth (players_of st) n_plyr in
     (* print out player's current stats *)
     if not (has_snd_hand p) then (
-      print_endline
-        ("Completing " ^ name_of p ^ "'s hand: "
-        ^ String.concat ", " (show_hand p));
+      ANSITerminal.print_string [ ANSITerminal.Bold ]
+        ("Completing " ^ name_of p ^ "'s hand: \n");
       card_display (show_hand p))
     else if has_snd_hand p && not swapped then (
-      print_endline
-        ("Completing " ^ name_of p ^ "'s left hand: "
-        ^ String.concat ", " (show_hand p));
+      ANSITerminal.print_string [ ANSITerminal.Bold ]
+        ("Completing " ^ name_of p ^ "'s left hand: \n");
       card_display (show_hand p))
     else (
-      print_endline
-        ("Completing " ^ name_of p ^ "'s right hand: "
-        ^ String.concat ", " (show_hand p));
+      ANSITerminal.print_string [ ANSITerminal.Bold ]
+        ("Completing " ^ name_of p ^ "'s right hand: \n");
       card_display (show_hand p));
     print_endline ("Current bet: " ^ string_of_int (current_bet p));
     print_endline
@@ -188,10 +182,8 @@ let rec get_player_command st plist n_plyr swapped =
         let updated_p = List.nth (players_of new_st) n_plyr in
         if is_bust updated_p then
           let _ =
-            print_endline
-              (name_of updated_p ^ "'s hand: "
-              ^ String.concat ", " (show_hand updated_p));
-            card_display (show_hand p);
+            print_endline (name_of updated_p ^ "'s hand: ");
+            card_display (show_hand updated_p);
             print_endline (name_of updated_p ^ " busted!\n")
           in
           get_player_command new_st plist (n_plyr + 1) swapped
@@ -220,10 +212,8 @@ let rec get_player_command st plist n_plyr swapped =
           let updated_p = List.nth (players_of new_st) n_plyr in
           if is_bust updated_p then
             let _ =
-              print_endline
-                (name_of updated_p ^ "'s hand: "
-                ^ String.concat ", " (show_hand updated_p));
-              card_display (show_hand p);
+              print_endline (name_of updated_p ^ "'s hand: ");
+              card_display (show_hand updated_p);
               print_endline (name_of updated_p ^ " busted!\n")
             in
             get_player_command new_st plist (n_plyr + 1) swapped
@@ -357,13 +347,13 @@ let rec get_player_bets st acc =
    quit *)
 let rec play_game num_rounds st =
   let _ =
-    ANSITerminal.print_string [ ANSITerminal.Bold ]
+    ANSITerminal.print_string
+      [ ANSITerminal.Bold; ANSITerminal.Underlined ]
       ("\nRound " ^ string_of_int num_rounds ^ ":\n");
     let b_st = get_player_bets st 0 in
-    print_endline "\nShuffling cards... Dealing to players... ";
-    print_endline
-      ("Dealer's hand: "
-      ^ String.concat ", " (b_st |> dealer_of |> show_hand));
+    ANSITerminal.print_string [ ANSITerminal.Bold ]
+      "\nShuffling cards... Dealing to players... \n";
+    print_endline "Dealer's hand: ";
     card_display (b_st |> dealer_of |> show_hand);
     print_player_starting_cards b_st (players_of b_st) 0 false;
     print_newline ();
@@ -394,16 +384,15 @@ let rec play_game num_rounds st =
     else
       let new_st = get_player_command bet_st (players_of st) 0 false in
       let end_st = complete_hand new_st in
-      print_endline "Completing Dealer's hand...";
-      print_endline
-        ("Dealer's hand: "
-        ^ String.concat ", " (end_st |> dealer_of |> show_hand));
+      ANSITerminal.print_string [ ANSITerminal.Bold ]
+        "Completing Dealer's hand...\n";
+      print_endline "Dealer's hand: ";
       card_display (end_st |> dealer_of |> show_hand);
       if end_st |> dealer_of |> hand_value > 21 then
         print_endline "Dealer busted!"
       else ();
       print_newline ();
-      print_endline "Results: ";
+      ANSITerminal.print_string [ ANSITerminal.Bold ] "Results: \n";
       let final_st =
         print_results (players_of end_st) (end_st |> dealer_of) end_st
       in
@@ -497,7 +486,7 @@ let rec num_players _ =
 (** [main ()] prompts for the game to play, then starts it. *)
 let main () =
   ANSITerminal.print_string
-    [ ANSITerminal.blue; ANSITerminal.Bold ]
+    [ ANSITerminal.blue; ANSITerminal.Bold; ANSITerminal.Underlined ]
     "\n\nWelcome to OCasino's BlackJack.\n";
   blackjack_descrip ();
   num_players ()

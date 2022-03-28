@@ -25,7 +25,11 @@ let rec make_player_list n names acc =
   | h :: t -> make_player_list (n - 1) t (acc @ [ init_stats h ])
 
 let init_state num_deck num_player player_names bet_list =
-  if num_player <> List.length player_names then raise InvalidInput
+  if
+    num_player <> List.length player_names
+    || num_player <> List.length bet_list
+    || List.length player_names <> List.length bet_list
+  then raise InvalidInput
   else
     let player_list_no_bets =
       make_player_list num_player player_names []
