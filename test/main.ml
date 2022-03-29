@@ -1,4 +1,5 @@
 open OUnit2
+open QCheck2
 open Game
 open Cards
 open Player
@@ -36,6 +37,24 @@ let string_of_command = function
   | Split -> "split"
   | DoubleDown -> "double down"
   | Play -> "play"
+
+(** [print_players p_list] prints the name and hand of each player in
+    [p_list] to check if state functions are working. *)
+let rec print_players p_list =
+  match p_list with
+  | [] -> print_string ""
+  | h :: t -> (
+      match h with
+      | name, cards ->
+          let _ =
+            print_endline (name ^ "'s hand: " ^ String.concat ", " cards)
+          in
+          print_players t)
+
+(** [print_dealer d_hand] prints the hand of the dealer to check if
+    state functions are working. *)
+let print_dealer d_hand =
+  print_endline ("Dealer's hand: " ^ String.concat ", " d_hand)
 
 (** reset_test name i expected_output constructs an OUnit test named
     [name] that asserts the quality of [expected_output] with
@@ -178,6 +197,78 @@ let player_insurance_test
     |> redeem_for_insurance operator
     |> current_total)
     ~printer:string_of_int
+
+(** [redeem_for_natural_test name b p expected_ouput] constructs an
+    OUnit test named [name] that asserts the quality [expected_ouput]
+    with
+    [( current_bet (redeem_for_natural b p),
+      current_total (redeem_for_natural b p) )]*)
+let redeem_for_natural_test
+    (name : string)
+    (b : bool)
+    (p : Player.player)
+    (expected_output : int * int) : test =
+  name >:: fun _ ->
+  assert_equal expected_output
+    ( current_bet (redeem_for_natural b p),
+      current_total (redeem_for_natural b p) )
+    ~printer:(fun x ->
+      string_of_int (fst x) ^ ", " ^ string_of_int (snd x))
+
+(** [has_ace_test name p expected_ouput] constructs an OUnit test named
+    [name] that asserts the quality [expected_ouput] with [has_ace p]*)
+let has_ace_test
+    (name : string)
+    (p : Player.player)
+    (expected_output : bool) : test =
+  name >:: fun _ ->
+  assert_equal expected_output (has_ace p) ~printer:string_of_bool
+
+(** [has_pair_test name p expected_ouput] constructs an OUnit test named
+    [name] that asserts the quality [expected_ouput] with [has_pair p]*)
+let has_pair_test
+    (name : string)
+    (p : Player.player)
+    (expected_output : bool) : test =
+  name >:: fun _ ->
+  assert_equal expected_output (has_pair p) ~printer:string_of_bool
+
+(** [split_test name p expected_ouput] constructs an OUnit test named
+    [name] that asserts the quality [expected_ouput] with [split_test p]*)
+let split_test (name : string) (p : Player.player) expected_output :
+    test =
+  name >:: fun _ ->
+  assert_equal expected_output
+    ( p |> split_pair |> show_hand,
+      p |> split_pair |> switch_hands |> show_hand )
+
+(** [current_bet_test name p expected_output] constructs an OUnit test
+    named [name] that asserts the current_bet of the player [p] is the
+    same as [expected_output]*)
+let current_bet_test
+    (name : string)
+    (p : player)
+    (expected_output : int) : test =
+  name >:: fun _ ->
+  assert_equal expected_output (current_bet p) ~printer:string_of_int
+
+(** [current_total_test name p expected_output] constructs an OUnit test
+    named [name] that asserts the current_total of the player [p] is the
+    same as [expected_output]*)
+let current_total_test
+    (name : string)
+    (p : player)
+    (expected_output : int) : test =
+  name >:: fun _ ->
+  assert_equal expected_output (current_total p) ~printer:string_of_int
+
+(** [natural_test name p expected_output] constructs an OUnit test named
+    [name] that asserts the hand of the player [p] is the a natural
+    using the is_natural and compares output to [expected_output]*)
+let natural_test (name : string) f (p : player) (expected_output : bool)
+    : test =
+  name >:: fun _ ->
+  assert_equal expected_output (f p) ~printer:string_of_bool
 
 (** [parse_number_test name i expected_output] constructs an OUnit test
     named [name] that asserts the quality of [expected_output] with
@@ -377,50 +468,6 @@ let state_deal_test (name : string) (pname : string) (st : State.s) :
     ~printer:(fun x ->
       string_of_bool (fst x) ^ ", " ^ string_of_bool (snd x))
 
-(** [redeem_for_natural_test name b p expected_ouput] constructs an
-    OUnit test named [name] that asserts the quality [expected_ouput]
-    with
-    [( current_bet (redeem_for_natural b p),
-      current_total (redeem_for_natural b p) )]*)
-let redeem_for_natural_test
-    (name : string)
-    (b : bool)
-    (p : Player.player)
-    (expected_output : int * int) : test =
-  name >:: fun _ ->
-  assert_equal expected_output
-    ( current_bet (redeem_for_natural b p),
-      current_total (redeem_for_natural b p) )
-    ~printer:(fun x ->
-      string_of_int (fst x) ^ ", " ^ string_of_int (snd x))
-
-(** [has_ace_test name p expected_ouput] constructs an OUnit test named
-    [name] that asserts the quality [expected_ouput] with [has_ace p]*)
-let has_ace_test
-    (name : string)
-    (p : Player.player)
-    (expected_output : bool) : test =
-  name >:: fun _ ->
-  assert_equal expected_output (has_ace p) ~printer:string_of_bool
-
-(** [has_pair_test name p expected_ouput] constructs an OUnit test named
-    [name] that asserts the quality [expected_ouput] with [has_pair p]*)
-let has_pair_test
-    (name : string)
-    (p : Player.player)
-    (expected_output : bool) : test =
-  name >:: fun _ ->
-  assert_equal expected_output (has_pair p) ~printer:string_of_bool
-
-(** [split_test name p expected_ouput] constructs an OUnit test named
-    [name] that asserts the quality [expected_ouput] with [split_test p]*)
-let split_test (name : string) (p : Player.player) expected_output :
-    test =
-  name >:: fun _ ->
-  assert_equal expected_output
-    ( p |> split_pair |> show_hand,
-      p |> split_pair |> switch_hands |> show_hand )
-
 let get_bet_tup (st : State.s) =
   ( st |> players_of |> List.map current_bet,
     st |> players_of |> List.map current_total )
@@ -477,17 +524,12 @@ let state_insurance_test
     |> get_insurance)
     ~printer:concat_int_list
 
-(** [state_changeace_test name pname st] constructs an OUnit test that
-    asserts the player with [pname] in [change_ace pname st] changes the
-    value of their ace cards to eleven from the values in [st]. *)
-let state_changeace_test (name : string) (pname : string) (st : State.s)
-    : test =
-  name >:: fun _ ->
+let state_changeace_prop_helper (pname : string) (st : State.s) =
   let find_pname_with_ace =
     players_of st |> List.filter has_ace
     |> List.filter (fun p -> name_of p = pname)
   in
-  if find_pname_with_ace = [] then assert_equal true true
+  if find_pname_with_ace = [] then true
   else
     let num_card_list =
       players_of st |> List.map (fun p -> List.length (show_hand p))
@@ -502,26 +544,25 @@ let state_changeace_test (name : string) (pname : string) (st : State.s)
     let new_hand_value_list =
       players_of new_st |> List.map (fun p -> hand_value p)
     in
-    assert_equal (true, true)
-      ( differ_by_one ( < ) hand_value_list new_hand_value_list 0,
-        num_card_list = new_num_card_list )
-      ~printer:(fun x ->
-        string_of_bool (fst x) ^ ", " ^ string_of_bool (snd x))
 
-(** [state_splithand_test name pname st] constructs an OUnit test that
-    asserts the player with [pname] in [split_hand pname st] has two
-    hands of cards where each hand has one card from the player's hand
-    in [st]. *)
-let state_splitswaphand_test
-    (name : string)
-    (pname : string)
-    (st : State.s) : test =
-  name >:: fun _ ->
+    differ_by_one ( < ) hand_value_list new_hand_value_list 0
+    && num_card_list = new_num_card_list
+
+(** [state_change_prop st] constructs an QCHeck property that checks if
+    all the players with given [pname] in [change_ace pname st] changes
+    the value of their ace cards to eleven from the values in [st] if
+    the player has an ace. *)
+let state_changeace_prop st =
+  List.for_all
+    (fun pname -> state_changeace_prop_helper pname st)
+    (st |> players_of |> List.map name_of)
+
+let state_splitswaphand_prop_helper (pname : string) (st : State.s) =
   let find_pname_with_pair =
     players_of st |> List.filter has_pair
     |> List.filter (fun p -> name_of p = pname)
   in
-  if find_pname_with_pair = [] then assert_equal true true
+  if find_pname_with_pair = [] then true
   else
     let num_card_list =
       players_of st |> List.map (fun p -> List.length (show_hand p))
@@ -536,26 +577,24 @@ let state_splitswaphand_test
     let new_hand_value_list =
       players_of new_st |> List.map (fun p -> hand_value p)
     in
-    assert_equal (true, true)
-      ( differ_by_one ( > ) hand_value_list new_hand_value_list 0,
-        differ_by_one ( > ) num_card_list new_num_card_list 0 )
-      ~printer:(fun x ->
-        string_of_bool (fst x) ^ ", " ^ string_of_bool (snd x))
+    differ_by_one ( > ) hand_value_list new_hand_value_list 0
+    && differ_by_one ( > ) num_card_list new_num_card_list 0
 
-(** [state_doubledown_test name pname st] constructs an OUnit test that
-    asserts the player with [pname] in [double_down pname st] has double
-    the bet of player with [panme] if player's hand in [st] has value 9,
-    10, or 11. *)
-let state_doubledown_test
-    (name : string)
-    (pname : string)
-    (st : State.s) : test =
-  name >:: fun _ ->
+(** [state_splithand_prop st] constructs an QCHeck property that checks
+    if all the players with given [pname] in [split_hand pname st] has
+    two hands of cards where each hand has one card from the player's
+    hand in [st] if the player has a pair in [st]. *)
+let state_splitswaphand_prop st =
+  List.for_all
+    (fun pname -> state_splitswaphand_prop_helper pname st)
+    (st |> players_of |> List.map name_of)
+
+let state_doubledown_prop_helper (pname : string) (st : State.s) =
   let find_pname_with_double =
     players_of st |> List.filter has_double
     |> List.filter (fun p -> name_of p = pname)
   in
-  if find_pname_with_double = [] then assert_equal true true
+  if find_pname_with_double = [] then true
   else
     let bet_list = players_of st |> List.map (fun p -> current_bet p) in
     let total_list =
@@ -568,28 +607,32 @@ let state_doubledown_test
     let new_total_list =
       players_of new_st |> List.map (fun p -> current_total p)
     in
-    assert_equal (true, true)
-      ( differ_by_one (fun x y -> y = 2 * x) bet_list new_bet_list 0,
-        total_list = new_total_list )
-      ~printer:(fun x ->
-        string_of_bool (fst x) ^ ", " ^ string_of_bool (snd x))
+    differ_by_one (fun x y -> y = 2 * x) bet_list new_bet_list 0
+    && total_list = new_total_list
+
+(** [state_doubledown_prop st] constructs an QCHeck property that checks
+    if all the players in [double_down st] has double the bet if
+    player's hand in [st] has value 9, 10, or 11. *)
+let state_doubledown_prop st =
+  List.for_all
+    (fun pname -> state_doubledown_prop_helper pname st)
+    (st |> players_of |> List.map name_of)
 
 let rec all_zeros lst =
   match lst with
   | [] -> true
   | h :: t -> h = 0 && all_zeros t
 
-(** [state_unDealer_nPlayer_test name st] constructs an OUnit test that
-    asserts that bets and totals in [unnatural_dealer_natural_player st]
+(** [state_unDealer_nPlayer_prop  st] constructs an QCHeck property that
+    checks if bets and totals in [unnatural_dealer_natural_player st]
     changes from the bets and totals in [st] if the dealer does not have
     a natural and at least one player in [st] has a natural. *)
-let state_unDealer_nPlayer_test (name : string) (st : State.s) : test =
-  name >:: fun _ ->
+let state_unDealer_nPlayer_prop st =
   let natural_plist = players_of st |> List.filter is_natural in
   if
     is_dealer_natural (dealer_of st)
     || not (List.length natural_plist >= 1)
-  then assert_equal true true
+  then true
   else
     let total_list =
       players_of st
@@ -603,18 +646,14 @@ let state_unDealer_nPlayer_test (name : string) (st : State.s) : test =
     let new_total_list =
       players_of new_st |> List.map (fun p -> current_total p)
     in
-    assert_equal (true, true)
-      (all_zeros new_bet_list, total_list = new_total_list)
-      ~printer:(fun x ->
-        string_of_bool (fst x) ^ ", " ^ string_of_bool (snd x))
+    all_zeros new_bet_list && total_list = new_total_list
 
-(** [state_nDealer_unPlayer_test name st] constructs an OUnit test that
-    asserts that bets and totals in [natural_dealer_unnatural_player st]
+(** [state_nDealer_unPlayer_prop st] constructs an QCHeck property that
+    checks if bets and totals in [natural_dealer_unnatural_player st]
     changes from the bets and totals in [st] if the dealer does have a
     natural. *)
-let state_nDealer_unPlayer_test (name : string) (st : State.s) : test =
-  name >:: fun _ ->
-  if not (is_dealer_natural (dealer_of st)) then assert_equal true true
+let state_nDealer_unPlayer_prop st =
+  if not (is_dealer_natural (dealer_of st)) then true
   else
     let total_list =
       players_of st
@@ -630,56 +669,7 @@ let state_nDealer_unPlayer_test (name : string) (st : State.s) : test =
     let new_total_list =
       players_of new_st |> List.map (fun p -> current_total p)
     in
-    assert_equal (true, true)
-      (all_zeros new_bet_list, total_list = new_total_list)
-      ~printer:(fun x ->
-        string_of_bool (fst x) ^ ", " ^ string_of_bool (snd x))
-
-(** [current_bet_test name p expected_output] constructs an OUnit test
-    named [name] that asserts the current_bet of the player [p] is the
-    same as [expected_output]*)
-let current_bet_test
-    (name : string)
-    (p : player)
-    (expected_output : int) : test =
-  name >:: fun _ ->
-  assert_equal expected_output (current_bet p) ~printer:string_of_int
-
-(** [current_total_test name p expected_output] constructs an OUnit test
-    named [name] that asserts the current_total of the player [p] is the
-    same as [expected_output]*)
-let current_total_test
-    (name : string)
-    (p : player)
-    (expected_output : int) : test =
-  name >:: fun _ ->
-  assert_equal expected_output (current_total p) ~printer:string_of_int
-
-(** [natural_test name p expected_output] constructs an OUnit test named
-    [name] that asserts the hand of the player [p] is the a natural
-    using the is_natural and compares output to [expected_output]*)
-let natural_test (name : string) f (p : player) (expected_output : bool)
-    : test =
-  name >:: fun _ ->
-  assert_equal expected_output (f p) ~printer:string_of_bool
-
-(** [print_players p_list] prints the name and hand of each player in
-    [p_list] to check if state functions are working. *)
-let rec print_players p_list =
-  match p_list with
-  | [] -> print_string ""
-  | h :: t -> (
-      match h with
-      | name, cards ->
-          let _ =
-            print_endline (name ^ "'s hand: " ^ String.concat ", " cards)
-          in
-          print_players t)
-
-(** [print_dealer d_hand] prints the hand of the dealer to check if
-    state functions are working. *)
-let print_dealer d_hand =
-  print_endline ("Dealer's hand: " ^ String.concat ", " d_hand)
+    all_zeros new_bet_list && total_list = new_total_list
 
 (**********************************************************************
   Add unit tests for modules below.
@@ -1130,36 +1120,6 @@ let state_tests =
       st3;
     state_deal_test
       "Deal to a ALice in st should only change Alice's hand" "Bob" st0;
-    state_changeace_test
-      "Change Bob's ace to value eleven if Alice has ace" "Bob" st0;
-    state_changeace_test
-      "Change Alice's ace to value eleven if Alice has ace" "Alice" st0;
-    state_changeace_test
-      "Change Henry's ace to value eleven if Alice has ace" "Henry" st0;
-    state_splitswaphand_test "Split Bob's pair if Bob has pair" "Bob"
-      st0;
-    state_splitswaphand_test "Split Alice's pair if Alice has pair"
-      "Alice" st0;
-    state_splitswaphand_test "Split Henry's pair if Henry has pair"
-      "Henry" st0;
-    state_doubledown_test
-      "Double down for Bob if Bob has double (i.e. hand value of 9, \
-       10, or 11"
-      "Bob" st0_with_bets;
-    state_doubledown_test
-      "Double down for Alice if Alice has double (i.e. hand value of \
-       9, 10, or 11"
-      "Alice" st0_with_bets;
-    state_doubledown_test
-      "Double down for Henry if Henry has double (i.e. hand value of \
-       9, 10, or 11"
-      "Henry" st0_with_bets;
-    state_unDealer_nPlayer_test
-      "Check if state changes when Dealer is not natural and at least \
-       one player is natural"
-      st0_with_bets;
-    state_nDealer_unPlayer_test
-      "Check if state changes when Dealer is natural" st0_with_bets;
     state_increasebet_test "test increase bet" 1 "Bob" st0
       ([ 1; 0; 0 ], [ 1; 2; 3 ]);
     state_redeembet_test "test rewarding chips for a winning player"
@@ -1179,3 +1139,41 @@ let suite =
          [ cards_tests; player_tests; command_tests; state_tests ]
 
 let _ = run_test_tt_main suite
+
+(* QCheck test for functions in state that are based an a randomized
+   parameter *)
+let st_gen =
+  Gen.return
+    (init_state 2 3 [ "Bob"; "Alice"; "Henry" ] [ 1; 2; 3 ]
+    |> increase_bet 1 "Bob" |> increase_bet 2 "Alice"
+    |> increase_bet 3 "Henry")
+
+let add_state_changeace_test =
+  Test.make ~name:"state_changeace" ~count:30 st_gen
+    state_changeace_prop
+
+let add_state_splitswaphand_test =
+  Test.make ~name:"state_splitswapdhand" ~count:30 st_gen
+    state_splitswaphand_prop
+
+let add_state_doubledown_test =
+  Test.make ~name:"state_doubledown" ~count:30 st_gen
+    state_doubledown_prop
+
+let add_state_unDealer_nPlayer_test =
+  Test.make ~name:"state_unDealer_nPlayer" ~count:30 st_gen
+    state_unDealer_nPlayer_prop
+
+let add_state_nDealer_unPlayer_test =
+  Test.make ~name:"state_nDealer_unPlayer" ~count:30 st_gen
+    state_nDealer_unPlayer_prop
+
+let _ =
+  QCheck_runner.run_tests
+    [
+      add_state_nDealer_unPlayer_test;
+      add_state_unDealer_nPlayer_test;
+      add_state_doubledown_test;
+      add_state_splitswaphand_test;
+      add_state_changeace_test;
+    ]
