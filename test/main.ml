@@ -1142,30 +1142,30 @@ let _ = run_test_tt_main suite
 
 (* QCheck test for functions in state that are based an a randomized
    parameter *)
-let st_gen =
+let st_gen _ =
   Gen.return
     (init_state 2 3 [ "Bob"; "Alice"; "Henry" ] [ 1; 2; 3 ]
     |> increase_bet 1 "Bob" |> increase_bet 2 "Alice"
     |> increase_bet 3 "Henry")
 
 let add_state_changeace_test =
-  Test.make ~name:"state_changeace" ~count:30 st_gen
+  Test.make ~name:"state_changeace" ~count:30 (st_gen ())
     state_changeace_prop
 
 let add_state_splitswaphand_test =
-  Test.make ~name:"state_splitswapdhand" ~count:30 st_gen
+  Test.make ~name:"state_splitswapdhand" ~count:30 (st_gen ())
     state_splitswaphand_prop
 
 let add_state_doubledown_test =
-  Test.make ~name:"state_doubledown" ~count:30 st_gen
+  Test.make ~name:"state_doubledown" ~count:30 (st_gen ())
     state_doubledown_prop
 
 let add_state_unDealer_nPlayer_test =
-  Test.make ~name:"state_unDealer_nPlayer" ~count:30 st_gen
+  Test.make ~name:"state_unDealer_nPlayer" ~count:30 (st_gen ())
     state_unDealer_nPlayer_prop
 
 let add_state_nDealer_unPlayer_test =
-  Test.make ~name:"state_nDealer_unPlayer" ~count:30 st_gen
+  Test.make ~name:"state_nDealer_unPlayer" ~count:30 (st_gen ())
     state_nDealer_unPlayer_prop
 
 let _ =
