@@ -1201,12 +1201,12 @@ let st_gen _ =
     |> increase_bet 3 "Henry")
 
 let add_state_changeace_test =
-  Test.make ~name:"state_changeace" ~count:50 (st_gen ())
-    state_changeace_prop
+  Test.make ~name:"state_changeace" (* 1/13 change to get ace *)
+    ~count:50 (st_gen ()) state_changeace_prop
 
 let add_state_splitswaphand_test =
-  Test.make ~name:"state_splitswapdhand" ~count:50 (st_gen ())
-    state_splitswaphand_prop
+  Test.make ~name:"state_splitswapdhand" (* 1/17 change to get pair *)
+    ~count:50 (st_gen ()) state_splitswaphand_prop
 
 let add_state_doubledown_test =
   Test.make ~name:"state_doubledown" ~count:50 (st_gen ())
