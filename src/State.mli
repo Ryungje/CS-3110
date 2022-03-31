@@ -106,7 +106,7 @@ val double_down : string -> s -> s
 (** [double_down pname st] is the state of the game [st] when player
     with [pname] has exactly two cards that totals to 9, 10, or 11 and
     decides to double their bet. Requires: [pname] must the name of a
-    player in [st] with a valid set of cards. *)
+    player in [st] with a valid set of cards with value 9, 10, or 11. *)
 
 val complete_hand : s -> s
 (** [complete_hand st] is the state of the game [st] after the dealer

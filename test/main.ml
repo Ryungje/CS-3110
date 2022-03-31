@@ -6,6 +6,58 @@ open Player
 open Commands
 open State
 
+(** Test Plan
+
+    Module Cards - tested automaticlaly by OUnit. The test cases were
+    developed using both black box and glass box testing to check if the
+    return values are correct. However, [shuffle] is randomed set of
+    cards, so it simply a property test that the set is equivalent to
+    the orginal set and the ordering of the list is printed out to
+    console to check whether or not each shuffle is different from
+    previous shuffle (i.e. does not produce same order every time).
+
+    Module Player - tested automatically by OUnit. The test cases were
+    developed using black box testing to check all the edge and normal
+    cases. Some of the generator functions return abstract type player,
+    so the data contained within each [player] is mass tested using
+    multiple query functions to ensure only one or two specific values
+    are changed by the function according to the specification of the
+    function.
+
+    Module Commands - tested automatically by OUnit. The test cases were
+    devleoped using both black box testing and glass box testing to
+    check if the proper exceptions and commands are returned depending
+    on the input. It tests whether or not the parsing functions can
+    handle unusual inputs (note: inputs are case sensitive).
+
+    Module State - tested by OUnit and QCheck. Functions [init_state],
+    [deal],[reset_all],[complete_hand],[increase_bet], and [redeem_bet]
+    are tested using OUnit using black box testing to check only a
+    specific value of a specifc player is changed. Uses the query
+    functions [players_of], [dealer_of], [remaining_deck], and
+    [list_of_players] to check the values (note: the output of the query
+    functions may be abstract type, where the data in the abstract types
+    can be extracted with query functions from the Player or Cards
+    module). Functions [increase_insurance] and [redeem_insurace]
+    together using OUnit black box testing because the property of
+    having an insurance is not retrievable, but the end total of chips
+    can be extracted after [redeem_insurance] is check whether or not
+    the total is updated corrected for the amount added by
+    [increase_insurance]. Functions [unnatural_dealer_natural_player],
+    [natural_dealer_unnatural_player], [change_ace], [split_hand],
+    [swap_hand], and [double_down] are functions that can only be called
+    under certain conditions (i.e. a specific type of hand of cards) as
+    the preconditions. These functions are tested under QCheck where
+    many randomizd states are created and checked to see if it meet the
+    proper precondition. If the randomly generated state meets the
+    precondition, then the property test will be carried out. Since a
+    large number of states is created for each test, it is very probably
+    that at least one of the states will meet the property (ex:
+    probability of getting dealth a pair is 1/17).
+
+    Module Instructions - not tested because it is only two functions
+    that print out instructions or definitions of terminologies to the
+    console. The formatting of the print is tested using the interface. *)
 (**********************************************************************
   Add definitions and helper functions for test cases below.
   ********************************************************************)
@@ -1149,23 +1201,23 @@ let st_gen _ =
     |> increase_bet 3 "Henry")
 
 let add_state_changeace_test =
-  Test.make ~name:"state_changeace" ~count:30 (st_gen ())
+  Test.make ~name:"state_changeace" ~count:50 (st_gen ())
     state_changeace_prop
 
 let add_state_splitswaphand_test =
-  Test.make ~name:"state_splitswapdhand" ~count:30 (st_gen ())
+  Test.make ~name:"state_splitswapdhand" ~count:50 (st_gen ())
     state_splitswaphand_prop
 
 let add_state_doubledown_test =
-  Test.make ~name:"state_doubledown" ~count:30 (st_gen ())
+  Test.make ~name:"state_doubledown" ~count:50 (st_gen ())
     state_doubledown_prop
 
 let add_state_unDealer_nPlayer_test =
-  Test.make ~name:"state_unDealer_nPlayer" ~count:30 (st_gen ())
+  Test.make ~name:"state_unDealer_nPlayer" ~count:50 (st_gen ())
     state_unDealer_nPlayer_prop
 
 let add_state_nDealer_unPlayer_test =
-  Test.make ~name:"state_nDealer_unPlayer" ~count:30 (st_gen ())
+  Test.make ~name:"state_nDealer_unPlayer" ~count:50 (st_gen ())
     state_nDealer_unPlayer_prop
 
 let _ =
