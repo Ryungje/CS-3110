@@ -1,0 +1,37 @@
+{
+  "blackjack": "a game of cards involving at least one player against a dealer (for this game, the dealer will be run by a machine). The aim is to reach a hand score of 21 with as little cards as possible, any combination of cards whose sum exceeds 21 is a bust. At the start of each round, each player can make a bet against the dealer. Then each is dealt two cards, while the dealer receives one card and another hidden card. Then the dealer goes around and asks each player to hit or stand, and upon the player's command, fulfills that request. After each player has had their turn, the dealer finishes their hand and the results of each player is compared to the dealer's hand. If the player has a higher score than the dealer without exceeding 21, or the same score but less cards, then they win their bet back plus the same amount from the dealer. If their score is lower, or if they have the same score but less cards, then the dealer wins and the player loses their bet. ",
+  "terminology": [
+    {
+      "name": "hit",
+      "description": "prompts the dealer to add a new card to the player's hand"
+    },
+    {
+      "name": "stand",
+      "description": "ends the player's turn with no new cards added"
+    },
+    {
+      "name": "bet",
+      "description": "increase the player's bet"
+    },
+    {
+      "name": "natural",
+      "description": "a hand that consists of an Ace and either a 10 or Royal card"
+    },
+    {
+      "name": "insurance",
+      "description": "in the case the dealer's face up card is an Ace or a ten-card, the player can make an insuranceup to half of the initial bet that the dealer has a natural. If the dealer does have a natural, then the player is paid double their insurance."
+    },
+    {
+      "name": "double down",
+      "description": "doubles player's original bet when the player's hand has exactly two cards that totals to value of 9, 10, or 11"
+    },
+    {
+      "name": "split",
+      "description": "divides a player's hand into two separate hands such taht each hand has one card when the player has a pair of cards with the same denomination"
+    },
+    {
+      "name": "ace to eleven",
+      "description": "if an ace is present in hand, change the value of the Ace card to have a card value of 11"
+    }
+  ]
+}
